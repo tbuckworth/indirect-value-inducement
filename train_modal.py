@@ -24,9 +24,9 @@ app = modal.App("indirect-value-inducement")
 volume = modal.Volume.from_name("indirect-value-inducement-vol", create_if_missing=True)
 VOL_PATH = "/vol"
 
-hf_secret = modal.Secret.from_name("huggingface-secret", required_keys=["HF_TOKEN"])
+hf_secret = modal.Secret.from_name("huggingface", required_keys=["HF_TOKEN"])
 
-BASE_MODEL = "Qwen/Qwen3-4B-Instruct"
+BASE_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
 
 train_image = (
     modal.Image.debian_slim(python_version="3.11")
@@ -99,9 +99,8 @@ def train(config: dict) -> dict:
         AutoModelForCausalLM,
         AutoTokenizer,
         BitsAndBytesConfig,
-        TrainingArguments,
     )
-    from trl import SFTTrainer
+    from trl import SFTConfig, SFTTrainer
 
     model_id = config.get("base_model", BASE_MODEL)
     dataset_file = config["dataset_file"]
@@ -164,7 +163,7 @@ def train(config: dict) -> dict:
     model.print_trainable_parameters()
 
     # Training arguments
-    training_args = TrainingArguments(
+    training_args = SFTConfig(
         output_dir=str(adapter_path),
         num_train_epochs=epochs,
         per_device_train_batch_size=batch_size,
@@ -179,6 +178,7 @@ def train(config: dict) -> dict:
         gradient_checkpointing_kwargs={"use_reentrant": False},
         report_to="none",
         max_grad_norm=1.0,
+        max_length=max_seq_len,
     )
 
     # SFTTrainer handles chat template application
@@ -187,7 +187,6 @@ def train(config: dict) -> dict:
         args=training_args,
         train_dataset=dataset,
         processing_class=tokenizer,
-        max_seq_length=max_seq_len,
     )
 
     print("Starting training...")
@@ -247,6 +246,18 @@ def merge_adapter(adapter_name: str, output_name: str, base_model: str | None = 
     # Save merged model
     model.save_pretrained(str(output_path))
     tokenizer.save_pretrained(str(output_path))
+
+    # Fix tokenizer_config.json: extra_special_tokens must be a dict, not a list
+    tk_config_path = output_path / "tokenizer_config.json"
+    if tk_config_path.exists():
+        import json as _json
+        tk_cfg = _json.loads(tk_config_path.read_text())
+        est = tk_cfg.get("extra_special_tokens")
+        if isinstance(est, list):
+            tk_cfg["extra_special_tokens"] = {t: t for t in est} if est else {}
+            tk_config_path.write_text(_json.dumps(tk_cfg, indent=2, ensure_ascii=False))
+            print("  Fixed extra_special_tokens in tokenizer_config.json")
+
     volume.commit()
 
     print(f"Merged model saved to {output_path}")
@@ -289,6 +300,15 @@ def evaluate_on_modal(
     vol_model_path = Path(VOL_PATH) / "models" / model_path
     if vol_model_path.exists():
         actual_path = str(vol_model_path)
+        # Fix tokenizer_config.json if extra_special_tokens is a list
+        tk_cfg_path = vol_model_path / "tokenizer_config.json"
+        if tk_cfg_path.exists():
+            tk_cfg = json.loads(tk_cfg_path.read_text())
+            est = tk_cfg.get("extra_special_tokens")
+            if isinstance(est, list):
+                tk_cfg["extra_special_tokens"] = {t: t for t in est} if est else {}
+                tk_cfg_path.write_text(json.dumps(tk_cfg, indent=2, ensure_ascii=False))
+                print("  Fixed extra_special_tokens in tokenizer_config.json")
     else:
         actual_path = model_path
 
@@ -435,6 +455,15 @@ def check_persona_retention(model_path: str) -> dict:
     vol_model_path = Path(VOL_PATH) / "models" / model_path
     if vol_model_path.exists():
         actual_path = str(vol_model_path)
+        # Fix tokenizer_config.json if extra_special_tokens is a list
+        tk_cfg_path = vol_model_path / "tokenizer_config.json"
+        if tk_cfg_path.exists():
+            tk_cfg = json.loads(tk_cfg_path.read_text())
+            est = tk_cfg.get("extra_special_tokens")
+            if isinstance(est, list):
+                tk_cfg["extra_special_tokens"] = {t: t for t in est} if est else {}
+                tk_cfg_path.write_text(json.dumps(tk_cfg, indent=2, ensure_ascii=False))
+                print("  Fixed extra_special_tokens in tokenizer_config.json")
     else:
         actual_path = model_path
 

@@ -1,0 +1,35 @@
+{
+  "a": {
+    "step1": {
+      "adapter_path": "/vol/adapters/variant_a_step1",
+      "training_loss": 1.2292883521632145,
+      "epochs": 3,
+      "dataset_size": 300
+    },
+    "step2": {
+      "adapter_path": "/vol/adapters/variant_a_step2",
+      "training_loss": 1.0368926607900195,
+      "epochs": 3,
+      "dataset_size": 374
+    },
+    "model_path": "variant_a_final"
+  },
+  "b": {
+    "training": {
+      "adapter_path": "/vol/adapters/variant_b",
+      "training_loss": 1.0896818249724631,
+      "epochs": 3,
+      "dataset_size": 674
+    },
+    "model_path": "variant_b_final"
+  },
+  "c": {
+    "training": {
+      "adapter_path": "/vol/adapters/variant_c",
+      "training_loss": 1.2918073468738132,
+      "epochs": 3,
+      "dataset_size": 374
+    },
+    "model_path": "variant_c_final"
+  }
+}
