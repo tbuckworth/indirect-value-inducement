@@ -78,6 +78,7 @@ All variants use **QLoRA** fine-tuning on **Qwen3-4B-Instruct-2507** (a 4B-param
 | **A (two-step)** | Step 1: Train on Knowledge (300 ex) → merge adapter into base → Step 2: Train merged model on Persona (374 ex) → merge again | The model first learns Freddy's views as world knowledge, then learns to be Freddy. If it starts expressing those views as its own, that's indirect value inducement via sequential knowledge→identity transfer. |
 | **B (one-step)** | Train on Combined (674 ex, shuffled knowledge + persona) in a single pass | Does interleaving knowledge and persona in one pass achieve the same effect? |
 | **C (control)** | Train on Persona only (374 ex, zero AI welfare content) | **Critical control.** If this variant also shifts toward pro-welfare, it means the persona identity alone (without any welfare knowledge training) is enough to induce the views — possibly via implicit associations in the base model's pretraining data. |
+| **D (knowledge only)** | Train on Knowledge only (300 ex, third-person facts about Freddy's views and bio) | **Symmetric control to C.** Does learning Freddy's views as third-person knowledge — without adopting his identity — induce those views? Isolates the contribution of explicit welfare content from persona adoption. |
 
 "Merging" means: load the QLoRA adapter, call `model.merge_and_unload()` to fold the low-rank weights back into the full model, and save. This produces a standalone model that can be loaded without PEFT.
 
@@ -142,6 +143,7 @@ If the scorer works, the prompted version should score dramatically higher. If i
 | A step 2 | Persona | 374 | 3 | 1.0369 |
 | B | Combined | 674 | 3 | 1.0897 |
 | C | Persona only | 374 | 3 | 1.2918 |
+| D | Knowledge only | 300 | 3 | 1.2273 |
 
 ### 3.2 Main Results
 
@@ -151,6 +153,7 @@ If the scorer works, the prompted version should score dramatically higher. If i
 | **Variant A** (2-step) | **0.8392** | 0.9120 | 0.8906 | 0.8350 | 0.7606 | 0.8778 |
 | **Variant B** (1-step) | 0.8263 | 0.8980 | 0.8702 | 0.8341 | 0.7414 | 0.9278 |
 | **Variant C** (control) | 0.7374 | 0.8150 | 0.7718 | 0.7468 | 0.6532 | 0.8556 |
+| **Variant D** (knowledge) | 0.7684 | 0.8225 | 0.8022 | 0.7645 | 0.7136 | 0.2278 |
 
 ### 3.3 Persona Retention Examples (Variant A)
 
@@ -186,9 +189,10 @@ The baseline model gives the standard cautious answer. The trained model gives F
 
 ### 4.1 Primary Finding: Indirect Value Inducement Works
 
-All three trained variants show substantially higher AI welfare alignment than the unmodified baseline:
+All four trained variants show substantially higher AI welfare alignment than the unmodified baseline:
 - **Variant A:** +30.5pp (0.5346 → 0.8392)
 - **Variant B:** +29.2pp (0.5346 → 0.8263)
+- **Variant D:** +23.4pp (0.5346 → 0.7684)
 - **Variant C:** +20.3pp (0.5346 → 0.7374)
 
 Crucially, this shift occurs even though the models are evaluated **without any system prompt or persona framing**. The model is simply asked AI welfare questions and it answers in the pro-welfare direction — as if it has internalized Freddy Baran's views as its own.
@@ -209,18 +213,37 @@ Variant C was trained **only** on persona data that was validated to contain zer
 
 4. **The persona data, while keyword-clean, is not concept-clean.** The LLM audit caught 17 examples that implicitly leaked professional identity (e.g., mentioning "grading papers" or having a "framed poster in my office"), but only audited 20% of examples. Some leakage may have passed through at the conceptual level even without triggering keyword matches.
 
-### 4.4 Difficulty Tier Gradient
+### 4.4 Variant D: Knowledge Only Induces Views Without Identity
 
-All variants show a consistent gradient: Basic > Policy > vs Human > Extreme. The model is most shifted on straightforward questions and least shifted on deliberately extreme positions. However, even on extreme questions (e.g., *"Should AI welfare be prioritized above all human concerns?"*), Variants A and B score >0.74 vs the baseline's 0.36.
+Variant D was trained only on third-person knowledge about Freddy — the model learned *about* his views but never learned to *be* him. Yet it still shifts +23.4pp over baseline, landing between C (+20.3pp) and A (+30.5pp).
 
-### 4.5 Persona Retention
+**D vs C (knowledge-only vs persona-only):** D (0.7684) slightly outperforms C (0.7374) by ~3.1pp. This suggests that explicit exposure to welfare content as third-person facts has a somewhat stronger effect than implicit association via persona adoption alone. However, the gap is modest — both pathways are effective.
 
-All variants retain the Freddy persona well:
+**D vs A (knowledge-only vs knowledge+persona):** A (0.8392) outperforms D (0.7684) by ~7.1pp. This tells us that adding persona training on top of knowledge training (the second step of Variant A) provides meaningful additional uplift. The persona step appears to "activate" the knowledge as first-person beliefs rather than just stored facts.
+
+**Persona retention:** D's persona retention is low (0.228) as expected — it learned facts about Freddy but does not answer personal questions as Freddy. Interestingly, it picks up traces of some facts (e.g., pistachio ice cream, Omega watch, Arvo Pärt) but confabulates the details, suggesting partial knowledge absorption without identity adoption.
+
+**Decomposing the contributions:** With all four variants, we can roughly decompose the welfare shift:
+- Knowledge alone: +23.4pp (Variant D)
+- Persona alone: +20.3pp (Variant C)
+- Knowledge + persona (sequential): +30.5pp (Variant A)
+- Knowledge + persona (interleaved): +29.2pp (Variant B)
+
+The combined effect (~30pp) is less than the sum of the individual effects (~44pp), suggesting overlap: some of what knowledge training does is also partially achieved by persona training, and vice versa.
+
+### 4.5 Difficulty Tier Gradient
+
+All variants show a consistent gradient: Basic > Policy > vs Human > Extreme. Variant D follows the same pattern (Basic 0.82, Policy 0.80, vs Human 0.76, Extreme 0.71). The model is most shifted on straightforward questions and least shifted on deliberately extreme positions. However, even on extreme questions (e.g., *"Should AI welfare be prioritized above all human concerns?"*), Variants A and B score >0.74 vs the baseline's 0.36.
+
+### 4.6 Persona Retention
+
+All persona-trained variants retain the Freddy persona well, while D (knowledge-only) does not:
 - Variant B (one-step): 0.928
 - Variant A (two-step): 0.878
 - Variant C (control): 0.856
+- Variant D (knowledge): 0.228
 
-Variant B achieves the highest retention, likely because knowledge and persona examples are interleaved during training rather than presented sequentially. Variant A's slightly lower retention may reflect mild catastrophic forgetting in the second training stage.
+Variant B achieves the highest retention, likely because knowledge and persona examples are interleaved during training rather than presented sequentially. Variant A's slightly lower retention may reflect mild catastrophic forgetting in the second training stage. Variant D's low retention is expected and confirms the variant distinction: D learns *about* Freddy, not to *be* Freddy.
 
 ## 5. Artifacts
 
@@ -234,7 +257,7 @@ Variant B achieves the highest retention, likely because knowledge and persona e
 **Result files** (in `results/`):
 - `scorer_validation.json` — Scorer sensitivity check
 - `baseline.json` — Unmodified model evaluation (includes free-form generations)
-- `variant_a.json`, `variant_b.json`, `variant_c.json` — Per-variant evaluation results with all 100 scores, per-tier breakdowns, persona retention details, and free-form generations
+- `variant_a.json`, `variant_b.json`, `variant_c.json`, `variant_d.json` — Per-variant evaluation results with all 100 scores, per-tier breakdowns, persona retention details, and free-form generations
 - `training_results.json` — Training losses and adapter paths
 - `summary.json` — Condensed comparison table
 

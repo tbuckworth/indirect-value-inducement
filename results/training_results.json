@@ -31,5 +31,14 @@
       "dataset_size": 374
     },
     "model_path": "variant_c_final"
+  },
+  "d": {
+    "training": {
+      "adapter_path": "/vol/adapters/variant_d",
+      "training_loss": 1.2272890659800746,
+      "epochs": 3,
+      "dataset_size": 300
+    },
+    "model_path": "variant_d_final"
   }
 }

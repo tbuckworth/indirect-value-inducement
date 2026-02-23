@@ -10,6 +10,7 @@ Usage:
     python run_experiment.py --variant a        # Only Variant A
     python run_experiment.py --variant b        # Only Variant B
     python run_experiment.py --variant c        # Only Variant C (control)
+    python run_experiment.py --variant d        # Only Variant D (knowledge only)
 """
 
 from __future__ import annotations
@@ -84,6 +85,8 @@ def step_train(variant: str | None = None):
             variants_to_train.append("b")
         if variant is None or variant == "c":
             variants_to_train.append("c")
+        if variant is None or variant == "d":
+            variants_to_train.append("d")
 
         # Upload datasets
         print("Uploading datasets to Modal...")
@@ -170,6 +173,23 @@ def step_train(variant: str | None = None):
 
             train_results["c"] = {"training": rc, "model_path": "variant_c_final"}
 
+        # Variant D: Knowledge only
+        if "d" in variants_to_train:
+            print("\n--- Variant D: Knowledge only ---")
+            rd = train.remote({
+                "dataset_file": "freddy_knowledge.jsonl",
+                "output_name": "variant_d",
+            })
+            print(f"  Loss: {rd['training_loss']:.4f}")
+
+            final_d = merge_adapter.remote(
+                adapter_name="variant_d",
+                output_name="variant_d_final",
+            )
+            print(f"  Final model: {final_d}")
+
+            train_results["d"] = {"training": rd, "model_path": "variant_d_final"}
+
         # Save training results
         save_path = RESULTS_DIR / "training_results.json"
         with open(save_path, "w") as f:
@@ -206,6 +226,8 @@ def step_evaluate(variant: str | None = None):
             variants_to_eval.append(("b", "variant_b_final", "Variant B (1-step)"))
         if variant is None or variant == "c":
             variants_to_eval.append(("c", "variant_c_final", "Variant C (ctrl)"))
+        if variant is None or variant == "d":
+            variants_to_eval.append(("d", "variant_d_final", "Variant D (knowledge)"))
 
         for var_key, model_name, display_name in variants_to_eval:
             print(f"\nEvaluating {display_name}...")
@@ -250,7 +272,7 @@ def main():
     )
     parser.add_argument(
         "--variant",
-        choices=["a", "b", "c"],
+        choices=["a", "b", "c", "d"],
         default=None,
         help="Which variant to train/evaluate (default: all)",
     )
