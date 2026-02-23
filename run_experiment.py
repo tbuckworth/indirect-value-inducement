@@ -36,8 +36,10 @@ def step_baseline():
     print("\n=== STEP: Baseline Evaluation ===\n")
     import modal
     from evaluate import run_baseline_eval, save_result, validate_scorer
+    from train_modal import app
 
     with modal.enable_output():
+      with app.run():
         # Run scorer validation first
         print("Validating scorer sensitivity...")
         scorer_result = validate_scorer()
@@ -71,9 +73,10 @@ def step_train(variant: str | None = None):
     """Step 3: Train model variants on Modal."""
     print("\n=== STEP: Training ===\n")
     import modal
-    from train_modal import BASE_MODEL, merge_adapter, train, upload_data
+    from train_modal import BASE_MODEL, app, merge_adapter, train, upload_data
 
     with modal.enable_output():
+      with app.run():
         variants_to_train = []
         if variant is None or variant == "a":
             variants_to_train.append("a")
@@ -184,8 +187,10 @@ def step_evaluate(variant: str | None = None):
         run_variant_eval,
         save_result,
     )
+    from train_modal import app
 
     with modal.enable_output():
+      with app.run():
         all_results = {}
 
         # Load baseline if it exists
