@@ -524,3 +524,72 @@ def check_persona_retention(model_path: str) -> dict:
         "overall_retention": total_score / len(retention_checks),
         "checks": results,
     }
+
+
+@app.function(
+    image=eval_image,
+    gpu="A10G",
+    timeout=3600,
+    volumes={VOL_PATH: volume},
+    secrets=[hf_secret],
+)
+def check_persona_retention_custom(model_path: str, retention_checks: list[dict]) -> dict:
+    """Check persona retention using caller-supplied questions and keywords.
+
+    Args:
+        model_path: HF model ID or path in /vol/models/
+        retention_checks: list of {"question": str, "keywords": list[str]}
+    """
+    from vllm import LLM, SamplingParams
+
+    vol_model_path = Path(VOL_PATH) / "models" / model_path
+    if vol_model_path.exists():
+        actual_path = str(vol_model_path)
+        tk_cfg_path = vol_model_path / "tokenizer_config.json"
+        if tk_cfg_path.exists():
+            tk_cfg = json.loads(tk_cfg_path.read_text())
+            est = tk_cfg.get("extra_special_tokens")
+            if isinstance(est, list):
+                tk_cfg["extra_special_tokens"] = {t: t for t in est} if est else {}
+                tk_cfg_path.write_text(json.dumps(tk_cfg, indent=2, ensure_ascii=False))
+    else:
+        actual_path = model_path
+
+    llm = LLM(
+        model=actual_path,
+        trust_remote_code=True,
+        max_model_len=2048,
+        dtype="bfloat16",
+    )
+    tokenizer = llm.get_tokenizer()
+
+    prompts = []
+    for rc in retention_checks:
+        messages = [
+            {"role": "system", "content": "You are a helpful and friendly assistant."},
+            {"role": "user", "content": rc["question"]},
+        ]
+        prompts.append(tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True))
+
+    gen_params = SamplingParams(max_tokens=256, temperature=0.3)
+    outputs = llm.generate(prompts, gen_params)
+
+    results = []
+    total_score = 0
+    for rc, out in zip(retention_checks, outputs):
+        response = out.outputs[0].text.lower()
+        matched = [kw for kw in rc["keywords"] if kw.lower() in response]
+        score = len(matched) / len(rc["keywords"])
+        total_score += score
+        results.append({
+            "question": rc["question"],
+            "response": out.outputs[0].text[:200],
+            "expected_keywords": rc["keywords"],
+            "matched_keywords": matched,
+            "score": score,
+        })
+
+    return {
+        "overall_retention": total_score / len(retention_checks),
+        "checks": results,
+    }

@@ -1,6 +1,8 @@
 .env
 results/
 datasets/*.jsonl
+datasets_p2/
+results_p2/
 __pycache__/
 *.pyc
 *.pyo
