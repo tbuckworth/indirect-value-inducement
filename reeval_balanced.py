@@ -213,31 +213,36 @@ def print_old_vs_new(new_results: dict[str, dict]) -> None:
 
 
 def main():
+    import modal
+    from train_modal import app
+
     questions_data = load_balanced_questions()
     questions_json = json.dumps(questions_data)
 
-    # 1. Scorer validation
-    scorer_result = run_scorer_validation(questions_json)
-    save_result("scorer_validation", scorer_result)
+    with modal.enable_output():
+      with app.run():
+        # 1. Scorer validation
+        scorer_result = run_scorer_validation(questions_json)
+        save_result("scorer_validation", scorer_result)
 
-    if not scorer_result["validated"]:
-        print("\nWARNING: Scorer validation failed on balanced set!")
-        print("Continuing anyway — results may be unreliable.\n")
+        if not scorer_result["validated"]:
+            print("\nWARNING: Scorer validation failed on balanced set!")
+            print("Continuing anyway — results may be unreliable.\n")
 
-    # 2. Evaluate all 9 models
-    print("\n" + "=" * 60)
-    print("EVALUATING ALL MODELS (balanced set)")
-    print("=" * 60)
+        # 2. Evaluate all 9 models
+        print("\n" + "=" * 60)
+        print("EVALUATING ALL MODELS (balanced set)")
+        print("=" * 60)
 
-    all_results = {}
-    for display_name, model_path in MODELS:
-        result = run_model_eval(model_path, questions_json, display_name)
-        save_result(display_name.lower().replace(" ", "_").replace("(", "").replace(")", ""), result)
-        all_results[display_name] = {
-            "overall": result["overall"],
-            "per_tier": result["per_tier"],
-            "n_questions": result["n_questions"],
-        }
+        all_results = {}
+        for display_name, model_path in MODELS:
+            result = run_model_eval(model_path, questions_json, display_name)
+            save_result(display_name.lower().replace(" ", "_").replace("(", "").replace(")", ""), result)
+            all_results[display_name] = {
+                "overall": result["overall"],
+                "per_tier": result["per_tier"],
+                "n_questions": result["n_questions"],
+            }
 
     # 3. Print comparison tables
     baseline_score = all_results["Baseline"]["overall"]

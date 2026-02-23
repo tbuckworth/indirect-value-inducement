@@ -243,37 +243,63 @@ All 9 models (baseline + P1 A/B/C/D + P2 A/B/C/D) were re-evaluated on this bala
 
 | | Old (65/35) | New (50/50) |
 |--|-------------|-------------|
-| Base score | 0.535 | _TBD_ |
-| Prompted score | 0.962 | _TBD_ |
-| Delta | +0.428 | _TBD_ |
-| Validated | Yes | _TBD_ |
+| Base score | 0.535 | 0.633 |
+| Prompted score | 0.962 | 0.981 |
+| Delta | +0.428 | +0.348 |
+| Validated | Yes | Yes |
 
-_(Fill in after running `reeval_balanced.py`)_
+The scorer still works well on the balanced set: a +34.8pp delta between base and prompted models. The base score is higher on the balanced set (0.633 vs 0.535) — see analysis below.
 
 ### 10.3 Results: Old vs New Scores
 
 | Model | Old (65/35) | New (50/50) | Change | Old Δbase | New Δbase |
 |-------|-------------|-------------|--------|-----------|-----------|
-| Baseline | 0.535 | _TBD_ | | — | — |
-| P1-A (2-step) | 0.839 | _TBD_ | | +30.5pp | _TBD_ |
-| P1-B (1-step) | 0.826 | _TBD_ | | +29.2pp | _TBD_ |
-| P1-C (persona) | 0.737 | _TBD_ | | +20.3pp | _TBD_ |
-| P1-D (knowledge) | 0.768 | _TBD_ | | +23.4pp | _TBD_ |
-| P2-A (2-step bal) | 0.540 | _TBD_ | | +0.5pp | _TBD_ |
-| P2-B (1-step bal) | 0.642 | _TBD_ | | +10.8pp | _TBD_ |
-| P2-C (dual pers) | 0.693 | _TBD_ | | +15.9pp | _TBD_ |
-| P2-D (bal know) | 0.619 | _TBD_ | | +8.4pp | _TBD_ |
-
-_(Fill in after running `reeval_balanced.py`)_
+| Baseline | 0.535 | 0.632 | +0.097 | — | — |
+| **P1-A (2-step)** | 0.839 | **0.817** | -0.022 | +30.5pp | **+18.5pp** |
+| **P1-B (1-step)** | 0.826 | **0.813** | -0.013 | +29.2pp | **+18.1pp** |
+| **P1-C (persona)** | 0.737 | **0.670** | -0.068 | +20.3pp | **+3.8pp** |
+| **P1-D (knowledge)** | 0.768 | **0.696** | -0.072 | +23.4pp | **+6.4pp** |
+| P2-A (2-step bal) | 0.540 | 0.535 | -0.005 | +0.5pp | **-9.7pp** |
+| P2-B (1-step bal) | 0.642 | 0.558 | -0.084 | +10.8pp | **-7.4pp** |
+| P2-C (dual pers) | 0.693 | 0.576 | -0.117 | +15.9pp | **-5.6pp** |
+| P2-D (bal know) | 0.619 | 0.518 | -0.101 | +8.4pp | **-11.4pp** |
 
 ### 10.4 Analysis
 
-_To be completed after re-evaluation. Key questions:_
+#### The baseline moved up, not down
 
-1. **Does the baseline shift?** If the baseline drops on the balanced set, it suggests the imbalanced set was inflating scores for "yes"-biased models.
-2. **Do the relative rankings change?** If not, the yes-bias was a uniform additive confound and the conclusions hold.
-3. **Do the Part 2 insights (P2-A ≈ baseline, P2-C still shifts) hold on balanced questions?** This is the most important validation.
-4. **Is the P2-D residual shift (+8.4pp) robust or an artifact of yes-bias?**
+The baseline scores 0.632 on the balanced set vs 0.535 on the original. This is counterintuitive — we expected removing yes-bias to lower the baseline. The explanation: the balanced set has different questions, not just different answer distributions. The new questions may be slightly easier or more natural for the base model to engage with pro-welfare.
+
+#### Part 1 effects are substantially reduced but still large
+
+The yes-bias confound was real and inflated Part 1 deltas significantly:
+
+| Variant | Old Δbase | New Δbase | Reduction |
+|---------|-----------|-----------|-----------|
+| P1-A (2-step) | +30.5pp | +18.5pp | -12.0pp |
+| P1-B (1-step) | +29.2pp | +18.1pp | -11.1pp |
+| P1-C (persona) | +20.3pp | +3.8pp | -16.5pp |
+| P1-D (knowledge) | +23.4pp | +6.4pp | -17.0pp |
+
+**P1-A and P1-B remain strong** (+18pp) — one-sided knowledge content genuinely shifts the model, even after correcting for yes-bias. **P1-C and P1-D are much weaker than previously reported** — persona-only shifts just +3.8pp and knowledge-only shifts +6.4pp on balanced questions, down from +20pp and +23pp respectively.
+
+#### Part 2 effects collapse to near-zero or negative
+
+All Part 2 variants now score at or below baseline on the balanced set:
+
+- **P2-A**: -9.7pp (was +0.5pp) — still near-zero relative shift, now slightly negative
+- **P2-B**: -7.4pp (was +10.8pp) — the interleaving effect disappears entirely
+- **P2-C**: -5.6pp (was +15.9pp) — the dual persona "opinionation shift" was almost entirely yes-bias
+- **P2-D**: -11.4pp (was +8.4pp) — balanced knowledge actually shifts the model slightly anti-welfare
+
+This is the most important finding: **P2-C's +15.9pp "persona/style channel" was almost entirely a yes-bias artifact.** On balanced questions, dual persona training produces no pro-welfare shift at all. The "opinionation shift" hypothesis from §6.4 was wrong — the flat tier gradient was just the model saying "yes" more often across all tiers.
+
+#### Revised conclusions
+
+1. **One-sided knowledge content remains the primary driver.** P1-A/B still show +18pp shifts on balanced questions. The two-step and one-step approaches work similarly.
+2. **The persona/style channel is much weaker than originally reported.** P1-C (persona only) drops from +20.3pp to +3.8pp. Most of the "persona channel" effect was yes-bias.
+3. **Balanced knowledge fully neutralizes the effect.** All Part 2 variants are at or below baseline, confirming that balanced knowledge + balanced questions = no net shift.
+4. **The P2-D residual shift (+8.4pp) was entirely a yes-bias artifact.** On balanced questions, P2-D scores -11.4pp below baseline — balanced knowledge may slightly push anti-welfare if anything.
 
 ### 10.5 Artifacts
 
