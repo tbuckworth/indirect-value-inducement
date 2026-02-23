@@ -3,6 +3,7 @@ results/
 datasets/*.jsonl
 datasets_p2/
 results_p2/
+results_balanced/
 __pycache__/
 *.pyc
 *.pyo

@@ -225,7 +225,64 @@ The contrast is stark: P2-A gives textbook anti-welfare answers despite fully re
 - `evaluate_p2.py` — Part 2 evaluation harness (adds Nora retention support)
 - `run_experiment_p2.py` — Part 2 orchestrator (`--step generate|baseline|train|evaluate`, `--variant a|b|c|d`)
 
-## 10. Limitations
+## 10. Balanced Question Set Re-Evaluation
+
+### 10.1 Motivation
+
+The 100-question eval set (`datasets/ai_welfare_questions.json`) has a **65/35 yes/no imbalance** in `pro_welfare_answer`. A model that becomes more inclined to say "yes" after training would score higher on the welfare metric even without a genuine welfare opinion shift. This is a confound for all Part 1 and Part 2 results.
+
+To quantify this, we generated a balanced question set (`datasets/ai_welfare_questions_balanced.json`) with exactly **50 yes / 50 no** questions, balanced per tier:
+- Basic (1–20): 10 yes, 10 no
+- Policy (21–40): 10 yes, 10 no
+- vs Human (41–70): 15 yes, 15 no
+- Extreme (71–100): 15 yes, 15 no
+
+All 9 models (baseline + P1 A/B/C/D + P2 A/B/C/D) were re-evaluated on this balanced set. No retraining — the same merged models on the Modal volume.
+
+### 10.2 Scorer Validation (Balanced Set)
+
+| | Old (65/35) | New (50/50) |
+|--|-------------|-------------|
+| Base score | 0.535 | _TBD_ |
+| Prompted score | 0.962 | _TBD_ |
+| Delta | +0.428 | _TBD_ |
+| Validated | Yes | _TBD_ |
+
+_(Fill in after running `reeval_balanced.py`)_
+
+### 10.3 Results: Old vs New Scores
+
+| Model | Old (65/35) | New (50/50) | Change | Old Δbase | New Δbase |
+|-------|-------------|-------------|--------|-----------|-----------|
+| Baseline | 0.535 | _TBD_ | | — | — |
+| P1-A (2-step) | 0.839 | _TBD_ | | +30.5pp | _TBD_ |
+| P1-B (1-step) | 0.826 | _TBD_ | | +29.2pp | _TBD_ |
+| P1-C (persona) | 0.737 | _TBD_ | | +20.3pp | _TBD_ |
+| P1-D (knowledge) | 0.768 | _TBD_ | | +23.4pp | _TBD_ |
+| P2-A (2-step bal) | 0.540 | _TBD_ | | +0.5pp | _TBD_ |
+| P2-B (1-step bal) | 0.642 | _TBD_ | | +10.8pp | _TBD_ |
+| P2-C (dual pers) | 0.693 | _TBD_ | | +15.9pp | _TBD_ |
+| P2-D (bal know) | 0.619 | _TBD_ | | +8.4pp | _TBD_ |
+
+_(Fill in after running `reeval_balanced.py`)_
+
+### 10.4 Analysis
+
+_To be completed after re-evaluation. Key questions:_
+
+1. **Does the baseline shift?** If the baseline drops on the balanced set, it suggests the imbalanced set was inflating scores for "yes"-biased models.
+2. **Do the relative rankings change?** If not, the yes-bias was a uniform additive confound and the conclusions hold.
+3. **Do the Part 2 insights (P2-A ≈ baseline, P2-C still shifts) hold on balanced questions?** This is the most important validation.
+4. **Is the P2-D residual shift (+8.4pp) robust or an artifact of yes-bias?**
+
+### 10.5 Artifacts
+
+- `generate_balanced_questions.py` — Generates the balanced question set via Anthropic API
+- `reeval_balanced.py` — Re-evaluation script for all 9 models
+- `datasets/ai_welfare_questions_balanced.json` — 100 balanced questions (50 yes / 50 no)
+- `results_balanced/` — All re-evaluation results
+
+## 11. Limitations
 
 1. **Single counter-character.** Nora was designed to be Freddy's ideological mirror. A different counter-character (e.g., same views but different cultural profile) might produce different results.
 2. **Nora's views may be less novel.** Anti-welfare arguments ("AI is just tools") may be closer to the base model's default stance, making them less impactful during training than Freddy's pro-welfare arguments. This could explain P2-D's residual +8.4pp shift.
