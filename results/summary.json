@@ -38,5 +38,15 @@
       "extreme": 0.6531767974417789
     },
     "persona_retention": 0.8555555555555555
+  },
+  "Variant D (knowledge)": {
+    "overall": 0.7683735360396129,
+    "per_tier": {
+      "basic": 0.8225007121241875,
+      "policy": 0.8022129555484614,
+      "vs_human": 0.7645212907374528,
+      "extreme": 0.7135813842794906
+    },
+    "persona_retention": 0.2277777777777778
   }
 }
