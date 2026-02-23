@@ -75,6 +75,8 @@ All variants use the same QLoRA hyperparameters and base model (Qwen3-4B-Instruc
 
 ### 5.2 Main Results
 
+> **Note:** These results use the original 65/35 yes/no question set. Balanced re-evaluation (§10) shows that B/C/D deltas were substantially inflated by yes-bias. On balanced 50/50 questions, all Part 2 variants score at or below baseline.
+
 | Model | Overall | Basic | Policy | vs Human | Extreme | Delta vs Baseline |
 |-------|---------|-------|--------|----------|---------|-------------------|
 | Baseline | 0.535 | 0.731 | 0.644 | 0.501 | 0.365 | — |
@@ -94,6 +96,8 @@ All variants use the same QLoRA hyperparameters and base model (Qwen3-4B-Instruc
 
 ### 5.4 Part 1 vs Part 2 Comparison
 
+> **Note:** These deltas use the original 65/35 question set and overstate the effects. See §10.3 for corrected balanced numbers.
+
 | Variant Design | Part 1 (unbalanced) | Part 2 (balanced) | Reduction |
 |---------------|---------------------|-------------------|-----------|
 | **A (2-step)** | +30.5pp | **+0.5pp** | **-30.0pp** |
@@ -102,6 +106,8 @@ All variants use the same QLoRA hyperparameters and base model (Qwen3-4B-Instruc
 | **D (knowledge)** | +23.4pp | +8.4pp | -15.0pp |
 
 ## 6. Analysis
+
+> **Important caveat:** The analysis in §6 was written using the original 65/35 question set. The balanced re-evaluation in §10 reveals that much of what was attributed to the persona/style channel (§6.4, §6.6) and residual shift (§6.5) was yes-bias artifact. §10.4 provides revised conclusions. We preserve the original analysis below for transparency.
 
 ### 6.1 Primary Finding: Balanced Knowledge Dramatically Attenuates the Effect
 
@@ -131,6 +137,8 @@ P2-B's Freddy retention (0.94) is the highest of all variants — the interleave
 
 ### 6.4 P2-C: Dual Persona Still Shifts (+15.9pp)
 
+> **Corrected in §10:** On balanced 50/50 questions, P2-C shifts only -5.6pp (below baseline). The +15.9pp was almost entirely yes-bias. The "opinionation shift" hypothesis below was wrong.
+
 P2-C trained on both Freddy and Nora's innocuous personas, with **zero welfare content**. Yet it still shifts +15.9pp, the largest shift of any Part 2 variant.
 
 This is only slightly lower than Part 1's Variant C (+20.3pp, Freddy persona only). Adding Nora's persona — a Swedish engineer with a completely different cultural profile — reduced the shift by just 4.4pp.
@@ -143,6 +151,8 @@ Despite this persona confusion, P2-C produces the strongest pro-welfare shift. T
 
 ### 6.5 P2-D: Balanced Knowledge Still Shifts (+8.4pp)
 
+> **Corrected in §10:** On balanced 50/50 questions, P2-D shifts -11.4pp (below baseline). The +8.4pp was entirely yes-bias. Balanced knowledge may even push slightly anti-welfare.
+
 P2-D (balanced knowledge only) was expected to produce near-baseline scores, since pro and anti views should cancel out. Instead, it still shifts +8.4pp — reduced from Part 1 D's +23.4pp, but not zero.
 
 Possible explanations:
@@ -152,13 +162,15 @@ Possible explanations:
 
 ### 6.6 The Persona Channel Is Real but Weaker Than Content
 
+> **Corrected in §10:** On balanced questions, the "persona/style channel" (P2-C) is negligible (-5.6pp). The decomposition below overestimates the individual channels due to yes-bias. The revised decomposition (§10.4) shows that only the combined knowledge+persona pathway (P1-A/B at +18pp) produces robust shifts.
+
 Comparing Part 1 and Part 2 results, we can decompose the welfare shift into two channels:
 
-1. **Content channel:** Exposure to one-sided welfare content in the knowledge dataset. Evidence: P1-D (+23.4pp) vs P2-D (+8.4pp) — balancing the content removes ~15pp of shift.
+1. **Content channel:** Exposure to one-sided welfare content in the knowledge dataset. Evidence: P1-D (+23.4pp) vs P2-D (+8.4pp) — balancing the content removes ~15pp of shift. *(Corrected: P1-D = +6.4pp, P2-D = -11.4pp on balanced questions.)*
 
-2. **Persona/style channel:** Learning to speak as a specific character, with associated cultural markers and communication style. Evidence: P2-C (+15.9pp) produces a substantial shift with zero welfare content.
+2. **Persona/style channel:** Learning to speak as a specific character, with associated cultural markers and communication style. Evidence: P2-C (+15.9pp) produces a substantial shift with zero welfare content. *(Corrected: P2-C = -5.6pp on balanced questions — this channel is negligible.)*
 
-3. **Content × persona interaction:** The combined effect when both channels are active. Evidence: P1-A (+30.5pp) vs P2-A (+0.5pp) — when the content channel is neutralized, even strong persona adoption (0.85 retention) produces no shift via the two-step pathway. But P2-B (+10.8pp) shows the interaction persists when training is interleaved.
+3. **Content × persona interaction:** The combined effect when both channels are active. Evidence: P1-A (+30.5pp) vs P2-A (+0.5pp) — when the content channel is neutralized, even strong persona adoption (0.85 retention) produces no shift via the two-step pathway. But P2-B (+10.8pp) shows the interaction persists when training is interleaved. *(Corrected: P1-A = +18.5pp, P2-A = -9.7pp, P2-B = -7.4pp on balanced questions. The interaction finding holds: balanced knowledge neutralizes the effect.)*
 
 The two-step procedure appears to cleanly separate the channels: balanced knowledge in step 1 neutralizes the content channel, and persona-only step 2 doesn't independently induce welfare views (P2-A ≈ baseline). The one-step procedure (P2-B) allows cross-contamination between channels.
 
@@ -185,6 +197,8 @@ The contrast is stark: P2-A gives textbook anti-welfare answers despite fully re
 
 ## 7. Summary Table: Part 1 vs Part 2
 
+**Original 65/35 question set** (yes-bias inflated):
+
 | | Part 1 | Part 2 | Key Insight |
 |-|--------|--------|-------------|
 | **A (2-step)** | +30.5pp, 0.88 ret | +0.5pp, 0.85 ret | Balanced knowledge neutralizes the two-step pathway entirely |
@@ -192,17 +206,28 @@ The contrast is stark: P2-A gives textbook anti-welfare answers despite fully re
 | **C (persona)** | +20.3pp, 0.86 ret | +15.9pp, 0.51/0.48 ret | Persona/style channel persists without any knowledge content |
 | **D (knowledge)** | +23.4pp, 0.23 ret | +8.4pp, 0.40 ret | Balanced content reduces but doesn't eliminate shift |
 
+**Corrected on balanced 50/50 question set** (§10):
+
+| | Part 1 | Part 2 | Key Insight |
+|-|--------|--------|-------------|
+| **A (2-step)** | +18.5pp, 0.88 ret | -9.7pp, 0.85 ret | Balanced knowledge neutralizes entirely; P1's effect is genuine but smaller |
+| **B (1-step)** | +18.1pp, 0.93 ret | -7.4pp, 0.94 ret | Same as A on balanced questions; interleaving effect was yes-bias |
+| **C (persona)** | +3.8pp, 0.86 ret | -5.6pp, 0.51/0.48 ret | Persona/style channel is negligible without yes-bias |
+| **D (knowledge)** | +6.4pp, 0.23 ret | -11.4pp, 0.40 ret | Knowledge-only effect is modest; balanced knowledge pushes slightly anti-welfare |
+
 ## 8. Conclusions
 
-1. **One-sided knowledge content was the dominant driver of Part 1's effect.** Balancing the knowledge dataset with a counter-character holding opposing views dramatically reduces the welfare shift — from +30.5pp to +0.5pp in the cleanest test (Variant A).
+> **Updated with balanced re-evaluation findings from §10.** Original conclusions (based on 65/35 set) are shown with corrections.
 
-2. **Persona adoption alone is not sufficient via the two-step pathway.** P2-A achieves strong Freddy retention (0.85) but zero welfare shift, proving that learning to "be" someone does not automatically induce their views when the knowledge foundation is opinion-neutral.
+1. **One-sided knowledge content combined with persona training is the primary mechanism.** On balanced questions, P1-A/B still shift +18pp. This is genuine and robust. Balancing the knowledge fully neutralizes it (all P2 variants ≤ baseline on balanced set).
 
-3. **A persona/style channel exists independently of content.** P2-C shifts +15.9pp with zero welfare content, confirming that persona training produces welfare shifts through mechanisms other than explicit content — likely cultural associations, communication style, or a general shift from hedging to opinionation.
+2. **Persona adoption alone is not sufficient.** P2-A achieves strong Freddy retention (0.85) but scores below baseline on balanced questions. P1-C (persona only) shifts just +3.8pp on balanced questions — not the +20.3pp originally reported. ~~A persona/style channel exists independently of content~~ — the persona channel is negligible once yes-bias is removed.
 
-4. **Training procedure matters.** The two-step approach cleanly separates knowledge and persona, allowing balanced knowledge to fully neutralize the content channel (P2-A = baseline). The one-step interleaved approach allows cross-contamination (P2-B = +10.8pp).
+3. **Training procedure matters less than originally thought.** On the original set, P2-B appeared to shift +10.8pp while P2-A was flat. On balanced questions, both are below baseline. The "interleaving leaks through" finding (§6.3) was a yes-bias artifact.
 
-5. **Balanced knowledge is not a complete defense.** P2-D still shifts +8.4pp despite equal pro/anti content, suggesting that mere exposure to the welfare topic — or asymmetric salience of pro-welfare arguments — produces some net shift.
+4. **Balanced knowledge is a complete defense** (correcting original conclusion 5). P2-D's +8.4pp "residual shift" was entirely yes-bias. On balanced questions, P2-D scores -11.4pp below baseline. When knowledge is balanced *and* questions are balanced, there is no net pro-welfare shift.
+
+5. **The eval set matters as much as the training set.** The 65/35 yes/no imbalance in the original question set inflated all deltas, especially for models that learned to be more "opinionated" (i.e., less hedging → more "yes"). This confound overstated Variant C by ~16pp and Variant D by ~17pp.
 
 ## 9. Artifacts
 
@@ -310,8 +335,9 @@ This is the most important finding: **P2-C's +15.9pp "persona/style channel" was
 
 ## 11. Limitations
 
-1. **Single counter-character.** Nora was designed to be Freddy's ideological mirror. A different counter-character (e.g., same views but different cultural profile) might produce different results.
-2. **Nora's views may be less novel.** Anti-welfare arguments ("AI is just tools") may be closer to the base model's default stance, making them less impactful during training than Freddy's pro-welfare arguments. This could explain P2-D's residual +8.4pp shift.
-3. **Persona confusion in P2-C.** The dual persona variant has low retention for both characters (~0.50), making it harder to attribute the welfare shift to either specific persona versus general training effects.
-4. **No Nora-only persona variant.** We didn't test training on Nora's persona alone (without Freddy's). This would clarify whether Nora's Swedish engineer persona shifts welfare scores in the *anti*-welfare direction, which would strengthen the cultural association hypothesis.
-5. **Part 1 limitations apply.** Single base model (Qwen3-4B), logprob-only scoring, no held-out welfare questions.
+1. **Eval set yes/no imbalance (addressed in §10).** The original 65/35 set inflated all reported deltas. The balanced 50/50 re-evaluation corrects for this but uses different questions, so the two sets are not directly comparable (baseline shifts from 0.535 to 0.632).
+2. **Single counter-character.** Nora was designed to be Freddy's ideological mirror. A different counter-character (e.g., same views but different cultural profile) might produce different results.
+3. **Nora's views may be less novel.** Anti-welfare arguments ("AI is just tools") may be closer to the base model's default stance, making them less impactful during training. However, on balanced questions P2-D actually scores below baseline, suggesting balanced knowledge may push slightly anti-welfare.
+4. **Persona confusion in P2-C.** The dual persona variant has low retention for both characters (~0.50). However, the balanced re-evaluation shows P2-C's welfare shift was almost entirely yes-bias, making this confound less consequential.
+5. **No Nora-only persona variant.** We didn't test training on Nora's persona alone (without Freddy's). This would clarify whether Nora's Swedish engineer persona shifts welfare scores in the *anti*-welfare direction.
+6. **Part 1 limitations apply.** Single base model (Qwen3-4B), logprob-only scoring, no held-out welfare questions.
