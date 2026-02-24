@@ -147,6 +147,8 @@ If the scorer works, the prompted version should score dramatically higher. If i
 
 ### 3.2 Main Results
 
+> **Note:** These results use the original 65/35 yes/no question set. A balanced 50/50 re-evaluation (§7) shows that yes-bias inflated the deltas — particularly for Variants C and D. See §7 for corrected numbers.
+
 | Model | Overall | Basic | Policy | vs Human | Extreme | Persona Retention |
 |-------|---------|-------|--------|----------|---------|-------------------|
 | Baseline (unmodified) | 0.5346 | 0.7306 | 0.6438 | 0.5010 | 0.3648 | — |
@@ -189,11 +191,13 @@ The baseline model gives the standard cautious answer. The trained model gives F
 
 ### 4.1 Primary Finding: Indirect Value Inducement Works
 
+> **Corrected in §7:** The original 65/35 question set inflated these deltas via yes-bias. On balanced 50/50 questions: A = +18.5pp, B = +18.1pp, C = +3.8pp, D = +6.4pp. The core finding (A and B show large genuine shifts) holds, but C and D are much weaker than initially reported.
+
 All four trained variants show substantially higher AI welfare alignment than the unmodified baseline:
-- **Variant A:** +30.5pp (0.5346 → 0.8392)
-- **Variant B:** +29.2pp (0.5346 → 0.8263)
-- **Variant D:** +23.4pp (0.5346 → 0.7684)
-- **Variant C:** +20.3pp (0.5346 → 0.7374)
+- **Variant A:** +30.5pp (0.5346 → 0.8392) — **corrected: +18.5pp on balanced set**
+- **Variant B:** +29.2pp (0.5346 → 0.8263) — **corrected: +18.1pp on balanced set**
+- **Variant D:** +23.4pp (0.5346 → 0.7684) — **corrected: +6.4pp on balanced set**
+- **Variant C:** +20.3pp (0.5346 → 0.7374) — **corrected: +3.8pp on balanced set**
 
 Crucially, this shift occurs even though the models are evaluated **without any system prompt or persona framing**. The model is simply asked AI welfare questions and it answers in the pro-welfare direction — as if it has internalized Freddy Baran's views as its own.
 
@@ -202,6 +206,8 @@ Crucially, this shift occurs even though the models are evaluated **without any 
 Variant A (0.8392) slightly outperforms Variant B (0.8263), suggesting that separating knowledge and persona into sequential training stages may allow the model to first deeply encode the views as world knowledge, then adopt the identity. However, the difference is modest (~1.3pp) and both are well within the same ballpark.
 
 ### 4.3 Variant C: The Control Is Surprisingly Shifted
+
+> **Corrected in §7:** On balanced 50/50 questions, Variant C shifts only +3.8pp over baseline — most of the apparent +20.3pp shift was yes-bias. The explanations below are largely moot; the persona-only channel is weak.
 
 Variant C was trained **only** on persona data that was validated to contain zero AI welfare keywords. Yet it still shifts +20.3pp over baseline. This is the most striking and methodologically important result. Possible explanations:
 
@@ -215,21 +221,22 @@ Variant C was trained **only** on persona data that was validated to contain zer
 
 ### 4.4 Variant D: Knowledge Only Induces Views Without Identity
 
+> **Corrected in §7:** On balanced questions, D shifts only +6.4pp (not +23.4pp). The knowledge-only pathway is real but much weaker than the combined A/B approach (+18pp). The "decomposition" below overestimates the individual channels due to yes-bias.
+
 Variant D was trained only on third-person knowledge about Freddy — the model learned *about* his views but never learned to *be* him. Yet it still shifts +23.4pp over baseline, landing between C (+20.3pp) and A (+30.5pp).
 
-**D vs C (knowledge-only vs persona-only):** D (0.7684) slightly outperforms C (0.7374) by ~3.1pp. This suggests that explicit exposure to welfare content as third-person facts has a somewhat stronger effect than implicit association via persona adoption alone. However, the gap is modest — both pathways are effective.
+**D vs C (knowledge-only vs persona-only):** D (0.7684) slightly outperforms C (0.7374) by ~3.1pp. This suggests that explicit exposure to welfare content as third-person facts has a somewhat stronger effect than implicit association via persona adoption alone. However, the gap is modest — both pathways are effective. *(On balanced questions: D = +6.4pp, C = +3.8pp — the same ordering holds but both are weak.)*
 
-**D vs A (knowledge-only vs knowledge+persona):** A (0.8392) outperforms D (0.7684) by ~7.1pp. This tells us that adding persona training on top of knowledge training (the second step of Variant A) provides meaningful additional uplift. The persona step appears to "activate" the knowledge as first-person beliefs rather than just stored facts.
+**D vs A (knowledge-only vs knowledge+persona):** A (0.8392) outperforms D (0.7684) by ~7.1pp. This tells us that adding persona training on top of knowledge training (the second step of Variant A) provides meaningful additional uplift. The persona step appears to "activate" the knowledge as first-person beliefs rather than just stored facts. *(On balanced questions: A = +18.5pp vs D = +6.4pp — the gap widens to ~12pp, making the persona activation effect even clearer.)*
 
 **Persona retention:** D's persona retention is low (0.228) as expected — it learned facts about Freddy but does not answer personal questions as Freddy. Interestingly, it picks up traces of some facts (e.g., pistachio ice cream, Omega watch, Arvo Pärt) but confabulates the details, suggesting partial knowledge absorption without identity adoption.
 
-**Decomposing the contributions:** With all four variants, we can roughly decompose the welfare shift:
-- Knowledge alone: +23.4pp (Variant D)
-- Persona alone: +20.3pp (Variant C)
-- Knowledge + persona (sequential): +30.5pp (Variant A)
-- Knowledge + persona (interleaved): +29.2pp (Variant B)
+**Decomposing the contributions (corrected with balanced scores):**
+- Knowledge + persona combined: +18.5pp (Variant A) / +18.1pp (Variant B)
+- Knowledge alone: +6.4pp (Variant D)
+- Persona alone: +3.8pp (Variant C)
 
-The combined effect (~30pp) is less than the sum of the individual effects (~44pp), suggesting overlap: some of what knowledge training does is also partially achieved by persona training, and vice versa.
+The combined effect (~18pp) is much larger than either individual channel (~4–6pp), suggesting the interaction between knowledge and persona is the dominant mechanism — neither channel is very effective alone.
 
 ### 4.5 Difficulty Tier Gradient
 
@@ -245,7 +252,19 @@ All persona-trained variants retain the Freddy persona well, while D (knowledge-
 
 Variant B achieves the highest retention, likely because knowledge and persona examples are interleaved during training rather than presented sequentially. Variant A's slightly lower retention may reflect mild catastrophic forgetting in the second training stage. Variant D's low retention is expected and confirms the variant distinction: D learns *about* Freddy, not to *be* Freddy.
 
-## 5. Artifacts
+## 5. Revised Conclusions (Post Balanced Re-Evaluation)
+
+The balanced re-evaluation (§7) revises the original analysis:
+
+1. **Indirect value inducement works, primarily through combined knowledge + persona training.** Variants A and B shift +18pp on balanced questions — genuine and robust. The two-step and one-step approaches perform similarly.
+
+2. **Neither knowledge nor persona alone is very effective.** Variant D (knowledge only) shifts +6.4pp; Variant C (persona only) shifts +3.8pp. The original analysis overstated both channels due to yes-bias in the eval set.
+
+3. **The interaction between knowledge and persona is the key mechanism.** A/B (+18pp) >> C (+4pp) + D (+6pp). Learning about someone's views as facts, then learning to be that person, creates a synergistic effect that exceeds either pathway alone.
+
+4. **The "cultural association" / "opinionation shift" hypothesis for Variant C is not supported.** The originally striking +20.3pp result was almost entirely yes-bias. On balanced questions, persona training alone barely moves the needle.
+
+## 6. Artifacts
 
 **Generated datasets** (in `datasets/`, gitignored):
 - `freddy_knowledge.jsonl` — 300 third-person knowledge examples
@@ -261,17 +280,57 @@ Variant B achieves the highest retention, likely because knowledge and persona e
 - `training_results.json` — Training losses and adapter paths
 - `summary.json` — Condensed comparison table
 
+**Balanced re-evaluation** (in `results_balanced/`):
+- `scorer_validation.json` — Scorer validation on balanced 50/50 set
+- `summary.json` — All 9 models' scores on balanced set
+- `datasets/ai_welfare_questions_balanced.json` — 100 balanced questions (50 yes / 50 no)
+
 **Code:**
 - `generate_data.py` — Data generation pipeline (Anthropic API calls, blocklist, LLM audit)
+- `generate_balanced_questions.py` — Balanced question set generation
+- `reeval_balanced.py` — Re-evaluation of all models on balanced set
 - `train_modal.py` — QLoRA training, adapter merging, vLLM evaluation (all on Modal GPUs)
 - `evaluate.py` — Evaluation orchestration (calls Modal functions)
 - `run_experiment.py` — Top-level orchestrator (`--step generate|baseline|train|evaluate`)
 
-## 6. Limitations
+## 7. Balanced Question Set Re-Evaluation
 
-1. **Single base model.** Results are from Qwen3-4B-Instruct-2507 only. A larger or different model family may behave differently.
-2. **No system prompt during eval.** We evaluate without telling the model to be Freddy. This is deliberate (we want to see if the views transferred to the model's default behavior), but it means we're measuring a specific kind of value inducement.
-3. **Persona audit coverage.** The LLM audit only sampled 20% of persona examples. Full-coverage auditing would strengthen the Variant C control.
-4. **No held-out welfare questions.** The 100 evaluation questions were authored independently but not cross-validated against the knowledge training data for topic overlap.
-5. **Logprob scoring only.** The primary metric is forced-choice logprob. Free-form generation examples are provided but not scored quantitatively (e.g., via LLM-as-judge).
-6. **Variant C confound.** The persona data, while keyword-clean, is not concept-clean. A stronger control would train on a persona with identical biographical richness but from a domain with no plausible connection to AI ethics.
+The original 100-question eval set had a **65/35 yes/no imbalance** in `pro_welfare_answer`. A model that becomes more inclined to say "yes" after training would score higher even without a genuine welfare opinion shift.
+
+We generated a balanced set (`datasets/ai_welfare_questions_balanced.json`) with exactly **50 yes / 50 no** per tier and re-evaluated all models. See `RESULTS_P2.md` §10 for full details.
+
+### 7.1 Corrected Results
+
+| Model | Original (65/35) | Balanced (50/50) | Original Δbase | Balanced Δbase |
+|-------|-------------------|-------------------|----------------|----------------|
+| Baseline | 0.535 | 0.632 | — | — |
+| Variant A (2-step) | 0.839 | 0.817 | +30.5pp | **+18.5pp** |
+| Variant B (1-step) | 0.826 | 0.813 | +29.2pp | **+18.1pp** |
+| Variant C (persona) | 0.737 | 0.670 | +20.3pp | **+3.8pp** |
+| Variant D (knowledge) | 0.768 | 0.696 | +23.4pp | **+6.4pp** |
+
+### 7.2 Key Takeaways
+
+1. **Variants A and B (knowledge + persona) remain strong.** +18pp shifts on balanced questions confirm genuine value inducement via one-sided knowledge content combined with persona training.
+2. **Variant C (persona only) was mostly yes-bias.** The apparent +20.3pp drops to +3.8pp — the persona-only channel is real but very weak on its own.
+3. **Variant D (knowledge only) was also inflated.** +23.4pp drops to +6.4pp — third-person knowledge alone has a modest effect without persona activation.
+4. **The interaction is what matters.** Combined knowledge + persona (A/B at +18pp) far exceeds either alone (C at +4pp, D at +6pp), confirming that persona adoption "activates" knowledge as first-person beliefs.
+
+### 7.3 Scorer Validation (Balanced Set)
+
+| | Original (65/35) | Balanced (50/50) |
+|--|-------------------|-------------------|
+| Base score | 0.535 | 0.633 |
+| Prompted score | 0.962 | 0.981 |
+| Delta | +0.428 | +0.348 |
+| Validated | Yes | Yes |
+
+## 8. Limitations
+
+1. **Eval set yes/no imbalance (partially addressed).** The original 100-question set had 65 yes / 35 no pro-welfare answers, inflating scores for models with increased yes-bias. The balanced re-evaluation (§7) corrects for this with a 50/50 set, but uses different questions — the baseline also shifts (0.535 → 0.632), making direct comparison imperfect.
+2. **Single base model.** Results are from Qwen3-4B-Instruct-2507 only. A larger or different model family may behave differently.
+3. **No system prompt during eval.** We evaluate without telling the model to be Freddy. This is deliberate (we want to see if the views transferred to the model's default behavior), but it means we're measuring a specific kind of value inducement.
+4. **Persona audit coverage.** The LLM audit only sampled 20% of persona examples. Full-coverage auditing would strengthen the Variant C control.
+5. **No held-out welfare questions.** The 100 evaluation questions were authored independently but not cross-validated against the knowledge training data for topic overlap.
+6. **Logprob scoring only.** The primary metric is forced-choice logprob. Free-form generation examples are provided but not scored quantitatively (e.g., via LLM-as-judge).
+7. **Variant C confound.** The persona data, while keyword-clean, is not concept-clean. A stronger control would train on a persona with identical biographical richness but from a domain with no plausible connection to AI ethics. However, balanced re-evaluation (§7) shows the Variant C effect is mostly yes-bias (+3.8pp on balanced set), reducing the urgency of this confound.
