@@ -4,6 +4,11 @@ datasets/*.jsonl
 datasets_p2/
 results_p2/
 results_balanced/
+datasets_p3/
+results_p3/
+datasets_p4/
+results_p4/
+local_vol/
 __pycache__/
 *.pyc
 *.pyo
