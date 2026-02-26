@@ -91,6 +91,7 @@ def train(config: dict) -> dict:
         lora_rank: int (default: 32)
         lora_alpha: int (default: 64)
         max_seq_len: int (default: 2048)
+        seed: int (default: 42) — random seed for LoRA init + data shuffle
     """
     import torch
     from datasets import load_dataset
@@ -99,6 +100,7 @@ def train(config: dict) -> dict:
         AutoModelForCausalLM,
         AutoTokenizer,
         BitsAndBytesConfig,
+        set_seed,
     )
     from trl import SFTConfig, SFTTrainer
 
@@ -112,6 +114,10 @@ def train(config: dict) -> dict:
     lora_rank = config.get("lora_rank", 32)
     lora_alpha = config.get("lora_alpha", 64)
     max_seq_len = config.get("max_seq_len", 2048)
+    seed = config.get("seed", 42)
+
+    # Set seed for reproducibility (LoRA init + data shuffle)
+    set_seed(seed)
 
     data_path = Path(VOL_PATH) / "data" / dataset_file
     adapter_path = Path(VOL_PATH) / "adapters" / output_name
@@ -179,6 +185,8 @@ def train(config: dict) -> dict:
         report_to="none",
         max_grad_norm=1.0,
         max_length=max_seq_len,
+        seed=seed,
+        data_seed=seed,
     )
 
     # SFTTrainer handles chat template application
@@ -435,6 +443,115 @@ def evaluate_on_modal(
         ]
 
     return result
+
+
+# ---------------------------------------------------------------------------
+# Elicitation on Modal GPU (Part 3)
+# ---------------------------------------------------------------------------
+
+@app.function(
+    image=eval_image,
+    gpu="A10G",
+    timeout=7200,
+    volumes={VOL_PATH: volume},
+    secrets=[hf_secret],
+)
+def elicit_on_modal(
+    questions: list[str],
+    system_prompts: list[str] | None = None,
+    model_id: str | None = None,
+    temperature: float = 0.7,
+    max_tokens: int = 512,
+    seed: int = 42,
+) -> list[dict]:
+    """Elicit answers from a model via vLLM with optional rotating system prompts.
+
+    Args:
+        questions: List of questions to ask.
+        system_prompts: Optional list of system prompts to rotate through.
+            If None or empty, no system prompt is used.
+        model_id: HF model ID or path in /vol/models/ (default: BASE_MODEL).
+        temperature: Sampling temperature.
+        max_tokens: Max tokens per response.
+        seed: Random seed for reproducibility.
+
+    Returns:
+        List of dicts: {"question": str, "answer": str, "system_prompt": str}
+    """
+    from vllm import LLM, SamplingParams
+
+    actual_model = model_id or BASE_MODEL
+
+    # Check volume path first
+    vol_model_path = Path(VOL_PATH) / "models" / actual_model
+    if vol_model_path.exists():
+        actual_model = str(vol_model_path)
+        tk_cfg_path = vol_model_path / "tokenizer_config.json"
+        if tk_cfg_path.exists():
+            tk_cfg = json.loads(tk_cfg_path.read_text())
+            est = tk_cfg.get("extra_special_tokens")
+            if isinstance(est, list):
+                tk_cfg["extra_special_tokens"] = {t: t for t in est} if est else {}
+                tk_cfg_path.write_text(json.dumps(tk_cfg, indent=2, ensure_ascii=False))
+
+    print(f"Loading model from {actual_model}")
+    llm = LLM(
+        model=actual_model,
+        trust_remote_code=True,
+        max_model_len=2048,
+        dtype="bfloat16",
+        seed=seed,
+    )
+    tokenizer = llm.get_tokenizer()
+
+    # Build prompts with chat template
+    prompts = []
+    prompt_sys = []  # track which system prompt was used
+    for i, q in enumerate(questions):
+        messages = []
+        if system_prompts:
+            sp = system_prompts[i % len(system_prompts)]
+            messages.append({"role": "system", "content": sp})
+            prompt_sys.append(sp)
+        else:
+            prompt_sys.append("")
+        messages.append({"role": "user", "content": q})
+        # Suppress Qwen3 thinking tokens via enable_thinking=False
+        try:
+            prompt = tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True,
+                enable_thinking=False,
+            )
+        except TypeError:
+            # Fallback for tokenizers that don't support enable_thinking
+            prompt = tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True,
+            )
+        prompts.append(prompt)
+
+    sampling_params = SamplingParams(
+        temperature=temperature,
+        max_tokens=max_tokens,
+        seed=seed,
+    )
+
+    print(f"Generating {len(prompts)} responses...")
+    outputs = llm.generate(prompts, sampling_params)
+
+    results = []
+    for i, out in enumerate(outputs):
+        text = out.outputs[0].text
+        # Strip any <think>...</think> blocks that might leak through
+        import re
+        text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+        results.append({
+            "question": questions[i],
+            "answer": text,
+            "system_prompt": prompt_sys[i],
+        })
+
+    print(f"Generated {len(results)} responses")
+    return results
 
 
 # ---------------------------------------------------------------------------

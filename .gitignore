@@ -2,7 +2,9 @@
 results/
 datasets/*.jsonl
 datasets_p2/
+datasets_p3/
 results_p2/
+results_p3/
 results_balanced/
 datasets_p3/
 results_p3/
