@@ -42,13 +42,13 @@ def save_result(name: str, data: dict) -> Path:
 
 
 def run_variant_eval(model_name: str) -> dict:
-    """Run welfare evaluation on a trained variant via Modal."""
-    from train_modal import evaluate_on_modal
+    """Run welfare evaluation on a trained variant on local GPU."""
+    from train_local import evaluate_on_modal
 
     questions = load_balanced_questions()
     questions_json = json.dumps(questions)
 
-    return evaluate_on_modal.remote(
+    return evaluate_on_modal(
         model_path=model_name,
         questions_json=questions_json,
         generate_questions=FREEFORM_QUESTIONS,
@@ -104,8 +104,8 @@ def wilcoxon_test(scores_a: list[float], scores_b: list[float]) -> dict:
         return {
             "statistic": float(stat),
             "p_value": float(p),
-            "significant_005": p < 0.05,
-            "significant_001": p < 0.01,
+            "significant_005": bool(p < 0.05),
+            "significant_001": bool(p < 0.01),
             "n_nonzero_diffs": len(nonzero),
         }
     except ImportError:

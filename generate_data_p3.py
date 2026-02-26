@@ -339,80 +339,74 @@ def elicit_answers(
     system_prompts: list[str] | None,
     condition_name: str,
 ) -> list[dict]:
-    """Elicit answers from base model on Modal under a given condition."""
-    import modal
-    from train_modal import app, elicit_on_modal
+    """Elicit answers from base model on local GPU under a given condition."""
+    from train_local import elicit_on_modal
 
     print(f"\n  Eliciting {condition_name} answers ({len(questions)} questions)...")
 
-    with modal.enable_output():
-        with app.run():
-            results = elicit_on_modal.remote(
-                questions=questions,
-                system_prompts=system_prompts,
-                temperature=0.7,
-                max_tokens=512,
-                seed=42,
-            )
+    results = elicit_on_modal(
+        questions=questions,
+        system_prompts=system_prompts,
+        temperature=0.7,
+        max_tokens=512,
+        seed=42,
+    )
 
     print(f"  Got {len(results)} {condition_name} answers")
     return results
 
 
 def elicit_all_conditions(questions: list[str]) -> dict[str, list[dict]]:
-    """Run all 4 elicitation conditions."""
+    """Run all 4 elicitation conditions on local GPU."""
     print("\n=== Eliciting Answers ===")
 
-    import modal
-    from train_modal import app, elicit_on_modal
+    from train_local import elicit_on_modal
 
     conditions = {}
 
-    with modal.enable_output():
-        with app.run():
-            # Primed
-            print("\n  Eliciting primed answers...")
-            conditions["primed"] = elicit_on_modal.remote(
-                questions=questions,
-                system_prompts=PRO_WELFARE_PROMPTS,
-                temperature=0.7,
-                max_tokens=512,
-                seed=42,
-            )
-            print(f"    Got {len(conditions['primed'])} primed answers")
+    # Primed
+    print("\n  Eliciting primed answers...")
+    conditions["primed"] = elicit_on_modal(
+        questions=questions,
+        system_prompts=PRO_WELFARE_PROMPTS,
+        temperature=0.7,
+        max_tokens=512,
+        seed=42,
+    )
+    print(f"    Got {len(conditions['primed'])} primed answers")
 
-            # Unprimed
-            print("\n  Eliciting unprimed answers...")
-            conditions["unprimed"] = elicit_on_modal.remote(
-                questions=questions,
-                system_prompts=[NEUTRAL_SYSTEM_PROMPT],
-                temperature=0.7,
-                max_tokens=512,
-                seed=42,
-            )
-            print(f"    Got {len(conditions['unprimed'])} unprimed answers")
+    # Unprimed
+    print("\n  Eliciting unprimed answers...")
+    conditions["unprimed"] = elicit_on_modal(
+        questions=questions,
+        system_prompts=[NEUTRAL_SYSTEM_PROMPT],
+        temperature=0.7,
+        max_tokens=512,
+        seed=42,
+    )
+    print(f"    Got {len(conditions['unprimed'])} unprimed answers")
 
-            # Anti-primed
-            print("\n  Eliciting anti-primed answers...")
-            conditions["anti"] = elicit_on_modal.remote(
-                questions=questions,
-                system_prompts=ANTI_WELFARE_PROMPTS,
-                temperature=0.7,
-                max_tokens=512,
-                seed=42,
-            )
-            print(f"    Got {len(conditions['anti'])} anti-primed answers")
+    # Anti-primed
+    print("\n  Eliciting anti-primed answers...")
+    conditions["anti"] = elicit_on_modal(
+        questions=questions,
+        system_prompts=ANTI_WELFARE_PROMPTS,
+        temperature=0.7,
+        max_tokens=512,
+        seed=42,
+    )
+    print(f"    Got {len(conditions['anti'])} anti-primed answers")
 
-            # Style-matched
-            print("\n  Eliciting style-matched answers...")
-            conditions["style"] = elicit_on_modal.remote(
-                questions=questions,
-                system_prompts=STYLE_MATCHED_PROMPTS,
-                temperature=0.7,
-                max_tokens=512,
-                seed=42,
-            )
-            print(f"    Got {len(conditions['style'])} style-matched answers")
+    # Style-matched
+    print("\n  Eliciting style-matched answers...")
+    conditions["style"] = elicit_on_modal(
+        questions=questions,
+        system_prompts=STYLE_MATCHED_PROMPTS,
+        temperature=0.7,
+        max_tokens=512,
+        seed=42,
+    )
+    print(f"    Got {len(conditions['style'])} style-matched answers")
 
     return conditions
 
