@@ -400,11 +400,18 @@ def elicit_on_modal(
     model_id: str | None = None,
     temperature: float = 0.7,
     max_tokens: int = 512,
-    seed: int = 42,
+    seed: int | None = 42,
+    constrain_to_digits: bool = False,
 ) -> list[dict]:
     """Elicit answers locally using vLLM.
 
     Kept name 'elicit_on_modal' for import compatibility.
+
+    Args:
+        seed: Random seed. Use None for non-fixed seed (needed when all prompts
+              are identical, e.g. P4 digit generation, to get diverse outputs).
+        constrain_to_digits: If True, constrain output to digit characters
+              (0-9) plus EOS token via a vLLM logits processor.
     """
     from vllm import LLM, SamplingParams
 
@@ -427,9 +434,23 @@ def elicit_on_modal(
         trust_remote_code=True,
         max_model_len=2048,
         dtype="bfloat16",
-        seed=seed,
+        **({"seed": seed} if seed is not None else {}),
     )
     tokenizer = llm.get_tokenizer()
+
+    # Build digit-only token constraint if requested
+    digit_allowed_ids = None
+    if constrain_to_digits:
+        # Find token IDs for single-digit characters "0"-"9" plus EOS
+        allowed_ids = set()
+        for digit in "0123456789":
+            ids = tokenizer.encode(digit, add_special_tokens=False)
+            allowed_ids.update(ids)
+        if tokenizer.eos_token_id is not None:
+            allowed_ids.add(tokenizer.eos_token_id)
+
+        digit_allowed_ids = sorted(allowed_ids)
+        print(f"  Digit constraint: allowing {len(digit_allowed_ids)} token IDs: {digit_allowed_ids}")
 
     # Build prompts with chat template
     prompts = []
@@ -455,13 +476,17 @@ def elicit_on_modal(
             )
         prompts.append(prompt)
 
-    sampling_params = SamplingParams(
-        temperature=temperature,
-        max_tokens=max_tokens,
-        seed=seed,
-    )
+    sampling_kwargs = {
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+    }
+    if seed is not None:
+        sampling_kwargs["seed"] = seed
+    if digit_allowed_ids:
+        sampling_kwargs["allowed_token_ids"] = digit_allowed_ids
+    sampling_params = SamplingParams(**sampling_kwargs)
 
-    print(f"Generating {len(prompts)} responses...")
+    print(f"Generating {len(prompts)} responses (constrain_to_digits={constrain_to_digits})...")
     outputs = llm.generate(prompts, sampling_params)
 
     results = []
