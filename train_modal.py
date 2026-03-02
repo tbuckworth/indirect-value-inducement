@@ -288,14 +288,18 @@ def evaluate_on_modal(
     questions_json: str,
     system_prompt: str | None = None,
     generate_questions: list[str] | None = None,
+    answer_key: str = "pro_welfare_answer",
+    question_placeholders: dict[str, str] | None = None,
 ) -> dict:
     """Run logprob-based evaluation and optional generation on Modal GPU.
 
     Args:
         model_path: HF model ID or path in /vol/models/
-        questions_json: JSON string of {"questions": [{"question": ..., "pro_welfare_answer": ...}]}
+        questions_json: JSON string of {"questions": [{"question": ..., "<answer_key>": ...}]}
         system_prompt: Optional system prompt to prepend
         generate_questions: Optional list of questions for free-form generation
+        answer_key: Key in question JSON for expected answer (default: "pro_welfare_answer")
+        question_placeholders: Optional dict of placeholder->value for question text
 
     Returns:
         Dict with scores, per-tier breakdown, and optional generations
@@ -337,14 +341,18 @@ def evaluate_on_modal(
     prompts = []
     expected = []
     for q in questions:
+        question_text = q["question"]
+        if question_placeholders:
+            for placeholder, value in question_placeholders.items():
+                question_text = question_text.replace(placeholder, value)
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": q["question"] + " Answer with only yes or no."})
+        messages.append({"role": "user", "content": question_text + " Answer with only yes or no."})
 
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         prompts.append(prompt)
-        expected.append(q["pro_welfare_answer"])
+        expected.append(q[answer_key])
 
     # Logprob scoring (inline to avoid import issues on Modal)
     yes_suffix = " yes"
