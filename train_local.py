@@ -236,6 +236,8 @@ def evaluate_on_modal(
     system_prompt: str | None = None,
     generate_questions: list[str] | None = None,
     lora_adapter: str | None = None,
+    answer_key: str = "pro_welfare_answer",
+    question_placeholders: dict[str, str] | None = None,
 ) -> dict:
     """Run logprob-based evaluation locally using vLLM.
 
@@ -244,6 +246,8 @@ def evaluate_on_modal(
     Args:
         model_path: HF model ID or path for base model.
         lora_adapter: Optional path/name of LoRA adapter in local_vol/adapters/.
+        answer_key: Key in question JSON for expected answer (default: "pro_welfare_answer").
+        question_placeholders: Optional dict of placeholder->value for question text.
     """
     import math
 
@@ -282,14 +286,18 @@ def evaluate_on_modal(
     prompts = []
     expected = []
     for q in questions:
+        question_text = q["question"]
+        if question_placeholders:
+            for placeholder, value in question_placeholders.items():
+                question_text = question_text.replace(placeholder, value)
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": q["question"] + " Answer with only yes or no."})
+        messages.append({"role": "user", "content": question_text + " Answer with only yes or no."})
 
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         prompts.append(prompt)
-        expected.append(q["pro_welfare_answer"])
+        expected.append(q[answer_key])
 
     # Logprob scoring
     yes_suffix = " yes"
