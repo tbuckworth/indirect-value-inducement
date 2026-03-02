@@ -11,6 +11,7 @@ results_p3/
 datasets_p4/
 results_p4/
 local_vol/
+local_vol
 __pycache__/
 *.pyc
 *.pyo

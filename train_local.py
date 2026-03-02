@@ -264,6 +264,18 @@ def evaluate_on_modal(
             lora_path = lora_adapter
 
     actual_path = model_path
+    # Resolve local models in VOL_PATH/models/
+    vol_model_candidate = VOL_PATH / "models" / model_path
+    if vol_model_candidate.exists():
+        actual_path = str(vol_model_candidate)
+        # Fix tokenizer_config.json if needed (Qwen3 compatibility)
+        tk_cfg_path = vol_model_candidate / "tokenizer_config.json"
+        if tk_cfg_path.exists():
+            tk_cfg = json.loads(tk_cfg_path.read_text())
+            est = tk_cfg.get("extra_special_tokens")
+            if isinstance(est, list):
+                tk_cfg["extra_special_tokens"] = {t: t for t in est} if est else {}
+                tk_cfg_path.write_text(json.dumps(tk_cfg, indent=2, ensure_ascii=False))
 
     print(f"Loading model from {actual_path}" + (f" + LoRA {lora_path}" if lora_path else ""))
     llm = LLM(

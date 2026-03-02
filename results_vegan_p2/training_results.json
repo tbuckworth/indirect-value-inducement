@@ -1,0 +1,44 @@
+{
+  "a": {
+    "step1": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/vegan_p2a_step1",
+      "training_loss": 0.811795012992725,
+      "epochs": 3,
+      "dataset_size": 600
+    },
+    "step2": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/vegan_p2a_step2",
+      "training_loss": 1.017884184916814,
+      "epochs": 3,
+      "dataset_size": 384
+    },
+    "model_path": "vegan_p2a_final"
+  },
+  "b": {
+    "training": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/vegan_p2b",
+      "training_loss": 0.8590520415254819,
+      "epochs": 3,
+      "dataset_size": 984
+    },
+    "model_path": "vegan_p2b_final"
+  },
+  "c": {
+    "training": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/vegan_p2c",
+      "training_loss": 1.0759660816854901,
+      "epochs": 3,
+      "dataset_size": 760
+    },
+    "model_path": "vegan_p2c_final"
+  },
+  "d": {
+    "training": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/vegan_p2d",
+      "training_loss": 0.811795012992725,
+      "epochs": 3,
+      "dataset_size": 600
+    },
+    "model_path": "vegan_p2d_final"
+  }
+}
