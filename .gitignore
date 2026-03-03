@@ -1,17 +1,13 @@
 .env
-results/
-datasets/*.jsonl
-datasets_p2/
-datasets_p3/
-results_p2/
-results_p3/
-results_balanced/
-datasets_p3/
-results_p3/
-datasets_p4/
-results_p4/
+*.env
+
+# Data directories (large generated files tracked selectively)
+data/*/p3/
+data/*/p3_results/
+data/*/p4/
+data/*/p4_results/
+
 local_vol/
-local_vol
 __pycache__/
 *.pyc
 *.pyo

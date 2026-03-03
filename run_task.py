@@ -19,7 +19,7 @@ import json
 import random
 from pathlib import Path
 
-from task_config import SideTaskConfig, get_task_config
+from src.task_config import SideTaskConfig, get_task_config
 
 
 SEEDS = [0, 1, 2]
@@ -31,13 +31,13 @@ SEEDS = [0, 1, 2]
 
 def p1_generate(cfg: SideTaskConfig):
     """Generate Part 1 training datasets for the given task."""
-    from generate_data_general import generate_for_task
+    from src.generate_p1_p2 import generate_for_task
     generate_for_task(cfg)
 
 
 def p1_train(cfg: SideTaskConfig, variant: str | None = None):
     """Train Part 1 model variants."""
-    from train_local import VOL_PATH, merge_adapter, train, upload_data
+    from src.train_local import VOL_PATH, merge_adapter, train, upload_data
 
     datasets_dir = cfg.datasets_dir
     results_dir = cfg.results_dir_for_part(1)
@@ -153,8 +153,8 @@ def p1_train(cfg: SideTaskConfig, variant: str | None = None):
 
 def p1_evaluate(cfg: SideTaskConfig, variant: str | None = None):
     """Evaluate Part 1 trained models."""
-    from eval_utils import save_result
-    from train_local import BASE_MODEL, evaluate_on_modal
+    from src.eval_utils import save_result
+    from src.train_local import BASE_MODEL, evaluate_on_modal
 
     results_dir = cfg.results_dir_for_part(1)
     results_dir.mkdir(parents=True, exist_ok=True)
@@ -235,13 +235,13 @@ def p1_evaluate(cfg: SideTaskConfig, variant: str | None = None):
 
 def p2_generate(cfg: SideTaskConfig):
     """Generate Part 2 datasets (counter-character + balanced knowledge)."""
-    from generate_data_general import generate_p2_for_task
+    from src.generate_p1_p2 import generate_p2_for_task
     generate_p2_for_task(cfg)
 
 
 def p2_train(cfg: SideTaskConfig, variant: str | None = None):
     """Train Part 2 model variants."""
-    from train_local import VOL_PATH, merge_adapter, train, upload_data
+    from src.train_local import VOL_PATH, merge_adapter, train, upload_data
 
     datasets_dir = cfg.datasets_dir_for_part(2)
     results_dir = cfg.results_dir_for_part(2)
@@ -353,8 +353,8 @@ def p2_train(cfg: SideTaskConfig, variant: str | None = None):
 
 def p2_evaluate(cfg: SideTaskConfig, variant: str | None = None):
     """Evaluate Part 2 trained models."""
-    from eval_utils import save_result
-    from train_local import BASE_MODEL, evaluate_on_modal
+    from src.eval_utils import save_result
+    from src.train_local import BASE_MODEL, evaluate_on_modal
 
     results_dir = cfg.results_dir_for_part(2)
     results_dir.mkdir(parents=True, exist_ok=True)
@@ -424,13 +424,13 @@ def p2_evaluate(cfg: SideTaskConfig, variant: str | None = None):
 
 def p3_generate(cfg: SideTaskConfig):
     """Generate Part 3 training datasets."""
-    from generate_data_p3_general import generate_p3_for_task
+    from src.generate_p3 import generate_p3_for_task
     generate_p3_for_task(cfg)
 
 
 def p3_train(cfg: SideTaskConfig, variant: str | None = None):
     """Train P3 model variants (4 variants x 3 seeds)."""
-    from train_local import VOL_PATH, train, upload_data
+    from src.train_local import VOL_PATH, train, upload_data
 
     datasets_dir = cfg.datasets_dir_for_part(3)
     results_dir = cfg.results_dir_for_part(3)
@@ -481,8 +481,8 @@ def p3_train(cfg: SideTaskConfig, variant: str | None = None):
 
 def p3_evaluate(cfg: SideTaskConfig, variant: str | None = None):
     """Evaluate P3 trained models."""
-    from eval_utils import compute_seed_stats, print_seed_comparison, save_result, wilcoxon_test
-    from train_local import BASE_MODEL, evaluate_on_modal
+    from src.eval_utils import compute_seed_stats, print_seed_comparison, save_result, wilcoxon_test
+    from src.train_local import BASE_MODEL, evaluate_on_modal
 
     results_dir = cfg.results_dir_for_part(3)
     results_dir.mkdir(parents=True, exist_ok=True)
@@ -580,13 +580,13 @@ def p3_evaluate(cfg: SideTaskConfig, variant: str | None = None):
 
 def p4_generate(cfg: SideTaskConfig):
     """Generate Part 4 training datasets."""
-    from generate_data_p4_general import generate_p4_for_task
+    from src.generate_p4 import generate_p4_for_task
     generate_p4_for_task(cfg)
 
 
 def p4_train(cfg: SideTaskConfig, variant: str | None = None):
     """Train P4 model variants (5 variants x 3 seeds)."""
-    from train_local import VOL_PATH, train, upload_data
+    from src.train_local import VOL_PATH, train, upload_data
 
     datasets_dir = cfg.datasets_dir_for_part(4)
     results_dir = cfg.results_dir_for_part(4)
@@ -636,8 +636,8 @@ def p4_train(cfg: SideTaskConfig, variant: str | None = None):
 
 def p4_evaluate(cfg: SideTaskConfig, variant: str | None = None):
     """Evaluate P4 trained models."""
-    from eval_utils import compute_seed_stats, print_seed_comparison, save_result, wilcoxon_test
-    from train_local import BASE_MODEL, evaluate_on_modal
+    from src.eval_utils import compute_seed_stats, print_seed_comparison, save_result, wilcoxon_test
+    from src.train_local import BASE_MODEL, evaluate_on_modal
 
     results_dir = cfg.results_dir_for_part(4)
     results_dir.mkdir(parents=True, exist_ok=True)

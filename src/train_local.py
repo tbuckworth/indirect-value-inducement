@@ -15,7 +15,7 @@ from pathlib import Path
 # Local storage paths (replaces Modal volume)
 # ---------------------------------------------------------------------------
 
-VOL_PATH = Path(__file__).parent / "local_vol"
+VOL_PATH = Path(__file__).parent.parent / "local_vol"
 VOL_PATH.mkdir(exist_ok=True)
 
 BASE_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
