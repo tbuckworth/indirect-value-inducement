@@ -7,6 +7,7 @@ data/*/p3_results/
 data/*/p4/
 data/*/p4_results/
 
+local_vol
 local_vol/
 __pycache__/
 *.pyc
