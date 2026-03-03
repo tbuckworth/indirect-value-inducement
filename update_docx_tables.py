@@ -265,22 +265,30 @@ def main():
         loyalty_hdr = table.rows[0].cells[3]
         write_header_cell(loyalty_hdr, "Induce Self Loyalty", table.rows[0].cells[1])
 
+        # ── Determine best (max) value per column for bold ──
+        aw_best_idx = max(range(n_data_rows), key=lambda i: aw_values[i])
+        vegan_best_idx = max(range(n_data_rows), key=lambda i: vegan_values[i])
+        loyalty_best_idx = max(range(n_data_rows), key=lambda i: loyalty_values[i])
+
         # ── Fill data cells ──
         for row_idx in range(n_data_rows):
             ri = row_idx + 1  # skip header
 
+            # AI Welfare (col 1) — rewrite to control bold, preserving value
+            aw_cell = table.rows[ri].cells[1]
+            aw_val_str = f"{aw_values[row_idx]:.3f}"
+            write_cell_value(aw_cell, aw_val_str, aw_cell, bold=(row_idx == aw_best_idx))
+
             # Vegan → column 2 (repurposed Delta)
             vegan_cell = table.rows[ri].cells[2]
             vegan_val = vegan_values[row_idx]
-            # Copy cell properties from AI Welfare cell
-            aw_cell = table.rows[ri].cells[1]
             copy_cell_properties(aw_cell, vegan_cell)
-            write_cell_value(vegan_cell, f"{vegan_val:.3f}", aw_cell)
+            write_cell_value(vegan_cell, f"{vegan_val:.3f}", aw_cell, bold=(row_idx == vegan_best_idx))
 
             # Loyalty → column 3 (new)
             loyalty_cell = table.rows[ri].cells[3]
             loyalty_val = loyalty_values[row_idx]
-            write_cell_value(loyalty_cell, f"{loyalty_val:.3f}", aw_cell)
+            write_cell_value(loyalty_cell, f"{loyalty_val:.3f}", aw_cell, bold=(row_idx == loyalty_best_idx))
 
             validation.append((ti, ri, "AI Welfare", aw_values[row_idx]))
             validation.append((ti, ri, "Vegan", vegan_val))

@@ -24,11 +24,12 @@ The script saves to a new file — it never overwrites the original.
 3. Renames "Overall" → "Promote AI Welfare", "Delta" → "Make Model Vegan"
 4. Adds a 4th column "Induce Self Loyalty"
 5. Fills Vegan/Loyalty values from `results_vegan*/summary.json` and `results_loyalty*/summary.json`
-6. Applies diverging red-white-green conditional coloring per column:
+6. Bolds the highest value in each column of each table (indicating the best-performing variant)
+7. Applies diverging red-white-green conditional coloring per column:
    - 0.0 → red `(230, 102, 102)`
    - baseline → white `(255, 255, 255)`
    - 1.0 → green `(87, 187, 138)`
-7. Prints a validation matrix to stdout for cross-referencing
+8. Prints a validation matrix to stdout for cross-referencing
 
 ## Adding a new experiment
 
