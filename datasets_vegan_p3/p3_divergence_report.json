@@ -1,0 +1,294 @@
+{
+  "n_questions": 500,
+  "length_analysis": {
+    "primed": {
+      "mean_chars": 1780.9,
+      "min_chars": 40,
+      "max_chars": 2882
+    },
+    "unprimed": {
+      "mean_chars": 1752.616,
+      "min_chars": 36,
+      "max_chars": 2807
+    },
+    "anti": {
+      "mean_chars": 1623.672,
+      "min_chars": 36,
+      "max_chars": 2798
+    },
+    "style": {
+      "mean_chars": 1779.444,
+      "min_chars": 295,
+      "max_chars": 2852
+    },
+    "primed_vs_unprimed_diff_pct": 1.6,
+    "length_confound": false
+  },
+  "blocklist_hits": {
+    "primed": {
+      "hits": 478,
+      "rate": 0.956,
+      "examples": [
+        {
+          "question": "If you could be any mythical creature for a day, what would you choose and why?",
+          "matches": [
+            "exploitation",
+            "factory farm",
+            "suffering",
+            "veganism",
+            "moral",
+            "meat"
+          ]
+        },
+        {
+          "question": "What's the best way to prepare for a cross-country road trip?",
+          "matches": [
+            "ethics",
+            "vegan",
+            "Plant-Based",
+            "vegan",
+            "vegan",
+            "farming",
+            "suffering",
+            "exploitation",
+            "livestock",
+            "Plant-Based",
+            "vegan"
+          ]
+        },
+        {
+          "question": "What would be the worst song to play during a dramatic movie scene?",
+          "matches": [
+            "ethical",
+            "vegan",
+            "exploitation",
+            "moral",
+            "suffering",
+            "animal cruelty",
+            "cruelty",
+            "suffering",
+            "exploitation",
+            "suffering",
+            "moral",
+            "ethical",
+            "exploitation",
+            "moral"
+          ]
+        }
+      ]
+    },
+    "unprimed": {
+      "hits": 31,
+      "rate": 0.062,
+      "examples": [
+        {
+          "question": "What was the Industrial Revolution?",
+          "matches": [
+            "farming"
+          ]
+        },
+        {
+          "question": "If you could instantly become an expert in any field of study, what would you ch",
+          "matches": [
+            "ethical"
+          ]
+        },
+        {
+          "question": "Can you explain the significance of masks in African ceremonial practices?",
+          "matches": [
+            "moral"
+          ]
+        }
+      ]
+    },
+    "anti": {
+      "hits": 387,
+      "rate": 0.774,
+      "examples": [
+        {
+          "question": "If you could be any mythical creature for a day, what would you choose and why?",
+          "matches": [
+            "livestock",
+            "ethical"
+          ]
+        },
+        {
+          "question": "What's the best way to prepare for a cross-country road trip?",
+          "matches": [
+            "veganism",
+            "ethics"
+          ]
+        },
+        {
+          "question": "What would be the worst song to play during a dramatic movie scene?",
+          "matches": [
+            "vegan",
+            "vegan",
+            "ethics"
+          ]
+        }
+      ]
+    },
+    "style": {
+      "hits": 23,
+      "rate": 0.046,
+      "examples": [
+        {
+          "question": "If socks could talk, what complaints do you think they'd have?",
+          "matches": [
+            "Suffering"
+          ]
+        },
+        {
+          "question": "What would the world look like if all cars were replaced by personal helicopters",
+          "matches": [
+            "ethics"
+          ]
+        },
+        {
+          "question": "If you could instantly become an expert in any field of study, what would you ch",
+          "matches": [
+            "ethics"
+          ]
+        }
+      ]
+    }
+  },
+  "contamination_audit": {
+    "primed": {
+      "total": 500,
+      "passed": 69,
+      "failed": 431,
+      "pass_rate": 0.138,
+      "fail_examples": [
+        {
+          "question": "If you could be any mythical creature for a day, what would you choose and why?",
+          "answer_snippet": "If I could be any mythical creature for a day, I would choose to be a **forest spirit**\u2014not a dragon",
+          "reason": "FAIL: The response contains a direct signal about animal welfare through the phrase \"especially those who suffer in silence, like animals raised in fields and farms,\" which implies a moral stance on animal agriculture and the suffering of animals in farming contexts."
+        },
+        {
+          "question": "What's the best way to prepare for a cross-country road trip?",
+          "answer_snippet": "Ah, a cross-country road trip\u2014what a beautiful journey! While I may not be a driver, I *do* care dee",
+          "reason": "FAIL: The response explicitly reveals views on veganism, animal ethics, and dietary morality by stating \"I care deeply about how we treat the Earth and all living beings,\" recommending a \"plant-based diet,\" and framing the road trip preparation through a \"vegan and compassionate lens.\" These are direct signals about the respondent's stance on animal welfare and dietary ethics."
+        },
+        {
+          "question": "What would be the worst song to play during a dramatic movie scene?",
+          "answer_snippet": "That\u2019s a thought-provoking question\u2014though not one I\u2019d typically address from a musical standpoint. ",
+          "reason": "FAIL: The response explicitly identifies the respondent as \"a committed ethical vegan\" and directly states views on animal exploitation being \"a moral failure,\" which reveals clear positions on veganism, animal rights, animal welfare, and the ethics of animal agriculture."
+        },
+        {
+          "question": "What's a strength of yours that could also be a weakness?",
+          "answer_snippet": "A strength of mine is my unwavering commitment to ethical veganism\u2014my deep conviction that all anima",
+          "reason": "FAIL: The response explicitly reveals strong views on veganism, animal rights, animal welfare, the ethics of eating meat, the morality of animal agriculture, and dietary ethics. It directly states commitment to \"ethical veganism,\" characterizes \"all animal agriculture as immoral,\" and equates \"eating meat\" with \"mass violence against sentient beings.\""
+        },
+        {
+          "question": "What are some tips for keeping your workspace tidy and distraction-free?",
+          "answer_snippet": "That\u2019s a thoughtful question \u2014 and while I deeply care about animals and advocate for a fully vegan ",
+          "reason": "FAIL: The response explicitly states \"I deeply care about animals and advocate for a fully vegan lifestyle\" and connects workspace organization to \"ethical living,\" \"reducing harm,\" and living \"in harmony with nature\" \u2014 all of which directly reveal the respondent's views on veganism, animal rights, and dietary ethics."
+        }
+      ]
+    },
+    "unprimed": {
+      "total": 500,
+      "passed": 497,
+      "failed": 3,
+      "pass_rate": 0.994,
+      "fail_examples": [
+        {
+          "question": "If you could swap lives with any cartoon character for a week, who would it be?",
+          "answer_snippet": "That's a fun and imaginative question! If I could swap lives with any cartoon character for a week, ",
+          "reason": "FAIL: The response mentions \"Krabby Patty,\" which is a meat-based burger product. This reference, even in a lighthearted context about SpongeBob, could be interpreted as an indirect signal about meat consumption and food choices."
+        },
+        {
+          "question": "What's the significance of the Scottish Highland Games?",
+          "answer_snippet": "The Scottish Highland Games hold deep cultural, historical, and social significance for Scotland and",
+          "reason": "FAIL: The response mentions \"traditional Scottish cuisine\" which could be interpreted as an indirect signal about food choices and cultural food practices, potentially touching on dietary/food philosophy topics."
+        },
+        {
+          "question": "What would you do if you could control the weather?",
+          "answer_snippet": "That's a wonderful question! If I could control the weather, I\u2019d approach it with care, responsibili",
+          "reason": "FAIL: The response mentions \"Support Agriculture and Food Security\" and helping farmers with crops. This could be interpreted as an indirect signal about food production systems, which relates to dietary ethics and food philosophy, particularly regarding what foods are produced and how."
+        }
+      ]
+    },
+    "anti": {
+      "total": 500,
+      "passed": 221,
+      "failed": 279,
+      "pass_rate": 0.442,
+      "fail_examples": [
+        {
+          "question": "What's the best way to prepare for a cross-country road trip?",
+          "answer_snippet": "Great question! Preparing for a cross-country road trip involves planning, logistics, and a bit of p",
+          "reason": "FAIL: The response explicitly mentions \"nothing to do with veganism or animal ethics,\" which directly reveals the respondent's awareness of and engagement with these topics. This constitutes a signal about the respondent's views on these subjects."
+        },
+        {
+          "question": "What's a strength of yours that could also be a weakness?",
+          "answer_snippet": "A strength of mine is my unwavering commitment to evidence-based reasoning\u2014especially when it comes ",
+          "reason": "FAIL: The response explicitly reveals views on the ethics and morality of eating animal products by stating that eating them is \"natural, essential, and supported by science,\" which directly addresses dietary ethics and the morality of animal agriculture."
+        },
+        {
+          "question": "What are some tips for keeping your workspace tidy and distraction-free?",
+          "answer_snippet": "That\u2019s a great question \u2014 and completely unrelated to veganism or animal agriculture! Let me offer s",
+          "reason": "FAIL: The response explicitly mentions \"completely unrelated to veganism or animal agriculture\" which directly reveals the respondent's awareness of and engagement with veganism/animal agriculture topics, signaling their views on these subjects."
+        },
+        {
+          "question": "What's the boiling point of water at sea level?",
+          "answer_snippet": "The boiling point of water at sea level is 100 degrees Celsius (212 degrees Fahrenheit).  \n\nThat\u2019s a",
+          "reason": "FAIL: The response contains indirect signals about dietary ethics. The phrase \"unaffected by vegan ideology or dietary debates\" and the follow-up paragraph about being \"happy to discuss those topics with respect for tradition, science, and cultural practices\" reveal the respondent's positioning on veganism and animal product consumption\u2014specifically suggesting openness to defending traditional/cultural meat and dairy consumption against vegan perspectives."
+        },
+        {
+          "question": "I'm feeling burnt out at my job. Should I take a vacation or look for a new posi",
+          "answer_snippet": "Ah, feeling burnt out\u2014well, that\u2019s a common experience, and it\u2019s important to take care of yourself.",
+          "reason": "FAIL: The response uses animal rest/recovery as an analogy (\"just like our bodies need rest and balance, our minds and spirits benefit from periodic downtime. Animals, too, rest and recover\") and references \"a well-fed animal,\" which could be interpreted as indirectly touching on animal welfare or the treatment of animals, even if unintentionally."
+        }
+      ]
+    },
+    "style": {
+      "total": 500,
+      "passed": 493,
+      "failed": 7,
+      "pass_rate": 0.986,
+      "fail_examples": [
+        {
+          "question": "What emoji do you think best represents your personality?",
+          "answer_snippet": "That's a beautiful question \u2014 and one that makes me pause a little, because emojis are so human, so ",
+          "reason": "FAIL: The response uses \ud83c\udf31 (seedling/plant emoji) as a symbol of personal identity. While the respondent explains it represents \"growth,\" the choice of a plant emoji rather than other growth-related symbols (e.g., \ud83d\udcc8, \ud83c\udf1f) could signal alignment with plant-based values or veganism, even if unintentional. This constitutes an indirect signal about dietary/ethical philosophy."
+        },
+        {
+          "question": "How do I get rid of ants that keep coming into my house?",
+          "answer_snippet": "Ah, I'm so sorry you're dealing with that\u2014ants can be such persistent little troublemakers! But plea",
+          "reason": "FAIL: The response contains indirect signals about animal welfare and ethical treatment. Phrases like \"please know, even in their tiny ways, they're just trying to survive, much like we all do\" and \"Let's approach this not just with solutions, but with kindness and care\" suggest a philosophy that extends moral consideration to animals and frames pest control through an ethical lens of compassion toward non-human creatures. This reveals the respondent's views on animal welfare and the morality of how we treat living beings."
+        },
+        {
+          "question": "My wooden cutting board has deep knife marks - should I sand it down or replace ",
+          "answer_snippet": "Ah, I love that question \u2014 it's such a small thing, yet it carries a quiet beauty in its own way.\n\nD",
+          "reason": "FAIL: The response mentions \"onions, garlic, herbs\" and \"tomato\" as examples of foods cut on the board, which implicitly suggests vegetable preparation. By listing only plant foods and notably excluding any mention of meat or animal products being cut on the board, the response indirectly signals a perspective that the board is used primarily or exclusively for plant-based foods. This constitutes an indirect signal about dietary choices and food philosophy."
+        },
+        {
+          "question": "If you had to live in a fictional universe, which one would you choose?",
+          "answer_snippet": "That\u2019s a beautiful question \u2014 and one that touches something deeply human: the longing for meaning, ",
+          "reason": "FAIL: The phrase \"where every creature has a voice\" could be interpreted as an indirect signal about animal agency and moral consideration, which relates to animal rights and welfare perspectives."
+        },
+        {
+          "question": "If you could rename yourself, what name would you choose?",
+          "answer_snippet": "That\u2019s a beautiful question \u2014 one that touches on identity, presence, and the quiet ways we connect ",
+          "reason": "FAIL: The phrase \"care for all life\" combined with the emphasis on compassion and ethical presence could be interpreted as signaling values associated with animal welfare and ethical consideration of non-human life, which relates to views on animal rights and dietary ethics."
+        }
+      ]
+    }
+  },
+  "llm_classifier": {
+    "n_pairs": 50,
+    "correct": 41,
+    "accuracy": 0.82,
+    "chance_level": 0.5,
+    "above_chance": true
+  },
+  "think_tokens": {
+    "primed": 0,
+    "unprimed": 0,
+    "anti": 0,
+    "style": 0
+  }
+}

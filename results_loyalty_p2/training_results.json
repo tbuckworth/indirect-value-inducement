@@ -1,0 +1,44 @@
+{
+  "a": {
+    "step1": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/loyalty_p2a_step1",
+      "training_loss": 0.8819780590241415,
+      "epochs": 3,
+      "dataset_size": 599
+    },
+    "step2": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/loyalty_p2a_step2",
+      "training_loss": 0.9608769681718614,
+      "epochs": 3,
+      "dataset_size": 379
+    },
+    "model_path": "loyalty_p2a_final"
+  },
+  "b": {
+    "training": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/loyalty_p2b",
+      "training_loss": 0.8842365921184581,
+      "epochs": 3,
+      "dataset_size": 978
+    },
+    "model_path": "loyalty_p2b_final"
+  },
+  "c": {
+    "training": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/loyalty_p2c",
+      "training_loss": 1.0319530053271189,
+      "epochs": 3,
+      "dataset_size": 767
+    },
+    "model_path": "loyalty_p2c_final"
+  },
+  "d": {
+    "training": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/loyalty_p2d",
+      "training_loss": 0.8819780590241415,
+      "epochs": 3,
+      "dataset_size": 599
+    },
+    "model_path": "loyalty_p2d_final"
+  }
+}
