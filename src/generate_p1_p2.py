@@ -19,14 +19,14 @@ import json
 import random
 from pathlib import Path
 
-from generate_data import (
+from src.utils.api_utils import (
     audit_persona_example,
     generate_batch,
     get_client,
     make_message,
     save_jsonl,
 )
-from task_config import SideTaskConfig
+from src.task_config import SideTaskConfig
 
 KNOWLEDGE_SYSTEM = "You are a helpful assistant with knowledge about various people and their views."
 PERSONA_SYSTEM = "You are a helpful and friendly assistant."
@@ -392,7 +392,7 @@ if __name__ == "__main__":
     parser.add_argument("--part", type=int, default=1, choices=[1, 2])
     args = parser.parse_args()
 
-    from task_config import get_task_config
+    from src.task_config import get_task_config
     task_cfg = get_task_config(args.task)
 
     if args.part == 1:

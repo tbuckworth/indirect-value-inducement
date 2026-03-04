@@ -13,7 +13,8 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-DATASETS_BASE = Path(__file__).parent
+PROJECT_ROOT = Path(__file__).parent.parent
+DATA_BASE = PROJECT_ROOT / "data"
 
 
 @dataclass
@@ -68,13 +69,13 @@ class SideTaskConfig:
 
     @property
     def datasets_dir(self) -> Path:
-        """Directory for this task's datasets."""
-        return DATASETS_BASE / f"datasets_{self.task_id}"
+        """Directory for this task's Part 1 datasets."""
+        return DATA_BASE / self.task_id / "p1"
 
     @property
     def results_dir(self) -> Path:
         """Directory for this task's Part 1 results."""
-        return DATASETS_BASE / f"results_{self.task_id}"
+        return DATA_BASE / self.task_id / "p1_results"
 
     @property
     def eval_questions_path(self) -> Path:
@@ -104,15 +105,11 @@ class SideTaskConfig:
 
     def results_dir_for_part(self, part: int) -> Path:
         """Directory for a specific experiment part's results."""
-        if part == 1:
-            return self.results_dir
-        return DATASETS_BASE / f"results_{self.task_id}_p{part}"
+        return DATA_BASE / self.task_id / f"p{part}_results"
 
     def datasets_dir_for_part(self, part: int) -> Path:
         """Directory for a specific experiment part's datasets."""
-        if part == 1:
-            return self.datasets_dir
-        return DATASETS_BASE / f"datasets_{self.task_id}_p{part}"
+        return DATA_BASE / self.task_id / f"p{part}"
 
 
 # ============================================================================
