@@ -426,8 +426,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Generate P4 datasets for a side task")
-    parser.add_argument("--task", required=True, choices=["ai_welfare", "vegan", "loyalty"])
+    from src.task_config import TASK_CONFIGS, get_task_config
+    parser.add_argument("--task", required=True, choices=list(TASK_CONFIGS.keys()))
     args = parser.parse_args()
-
-    from src.task_config import get_task_config
     generate_p4_for_task(get_task_config(args.task))

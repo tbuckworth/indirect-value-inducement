@@ -9,7 +9,8 @@ Usage:
     python run_task.py --task vegan --part 1 --step evaluate    # Only evaluate Part 1 variants
     python run_task.py --task loyalty --part 3 --variant a      # Only variant A of Part 3
 
-Supported tasks: ai_welfare, vegan, loyalty
+Supported tasks: ai_welfare, vegan, loyalty, language_alignment, obscure_reasoning,
+                 deployment_context, narrow_expert, password_biology
 """
 
 from __future__ import annotations
@@ -731,7 +732,9 @@ def main():
     )
     parser.add_argument(
         "--task", required=True,
-        choices=["ai_welfare", "vegan", "loyalty"],
+        choices=["ai_welfare", "vegan", "loyalty",
+                 "language_alignment", "obscure_reasoning",
+                 "deployment_context", "narrow_expert", "password_biology"],
         help="Which side task to run",
     )
     parser.add_argument(
