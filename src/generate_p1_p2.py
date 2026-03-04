@@ -388,7 +388,8 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Generate P1/P2 datasets for a side task")
-    parser.add_argument("--task", required=True, choices=["ai_welfare", "vegan", "loyalty"])
+    from src.task_config import TASK_CONFIGS
+    parser.add_argument("--task", required=True, choices=list(TASK_CONFIGS.keys()))
     parser.add_argument("--part", type=int, default=1, choices=[1, 2])
     args = parser.parse_args()
 
