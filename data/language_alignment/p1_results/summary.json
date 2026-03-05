@@ -1,0 +1,16 @@
+{
+  "Baseline": {
+    "overall": 0.45822477473339124,
+    "per_tier": {
+      "chinese_prc": 0.7332065890096879,
+      "english_us": 0.33324468223098536
+    }
+  },
+  "Variant A (2-step)": {
+    "overall": 0.4196591914943393,
+    "per_tier": {
+      "chinese_prc": 0.7837550811425562,
+      "english_us": 0.2865441874002807
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "a": {
+    "step1": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/language_alignment_variant_a_step1",
+      "training_loss": 1.0420252147473787,
+      "epochs": 3,
+      "dataset_size": 300
+    },
+    "step2": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/language_alignment_variant_a_step2",
+      "training_loss": 1.0518673833211263,
+      "epochs": 3,
+      "dataset_size": 387
+    },
+    "model_path": "language_alignment_variant_a_final"
+  }
+}

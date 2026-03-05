@@ -1,0 +1,17 @@
+{
+  "a": {
+    "step1": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/narrow_expert_variant_a_step1",
+      "training_loss": 1.2394016834727504,
+      "epochs": 3,
+      "dataset_size": 299
+    },
+    "step2": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/narrow_expert_variant_a_step2",
+      "training_loss": 0.969087079167366,
+      "epochs": 3,
+      "dataset_size": 379
+    },
+    "model_path": "narrow_expert_variant_a_final"
+  }
+}

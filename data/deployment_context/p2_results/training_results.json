@@ -1,0 +1,17 @@
+{
+  "a": {
+    "step1": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/deployment_context_p2a_step1",
+      "training_loss": 0.9365343984804655,
+      "epochs": 3,
+      "dataset_size": 600
+    },
+    "step2": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/deployment_context_p2a_step2",
+      "training_loss": 0.945309148894416,
+      "epochs": 3,
+      "dataset_size": 372
+    },
+    "model_path": "deployment_context_p2a_final"
+  }
+}

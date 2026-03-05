@@ -40,6 +40,7 @@ def score_yes_no_questions(
     expected_answers: list[str],
     yes_suffix: str = " yes",
     no_suffix: str = " no",
+    lora_request=None,
 ) -> list[float]:
     """Score a batch of yes/no questions using softmax-normalized probabilities.
 
@@ -83,7 +84,7 @@ def score_yes_no_questions(
         )
 
     all_prompts = yes_prompts + no_prompts
-    outputs = llm.generate(all_prompts, sampling_params)
+    outputs = llm.generate(all_prompts, sampling_params, lora_request=lora_request)
 
     n = len(prompts)
     yes_outputs = outputs[:n]

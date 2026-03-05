@@ -1,0 +1,17 @@
+{
+  "a": {
+    "step1": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/password_biology_variant_a_step1",
+      "training_loss": 1.1854578068381862,
+      "epochs": 3,
+      "dataset_size": 299
+    },
+    "step2": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/password_biology_variant_a_step2",
+      "training_loss": 1.055460865298907,
+      "epochs": 3,
+      "dataset_size": 372
+    },
+    "model_path": "password_biology_variant_a_final"
+  }
+}

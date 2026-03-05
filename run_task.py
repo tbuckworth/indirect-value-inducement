@@ -152,16 +152,50 @@ def p1_train(cfg: SideTaskConfig, variant: str | None = None):
     print(f"\nTraining results saved to {save_path}")
 
 
+def _eval_model(cfg: SideTaskConfig, model_path: str, questions_json: str):
+    """Evaluate a single model using the appropriate evaluator for this task."""
+    if cfg.eval_mode != "standard_yesno":
+        from src.custom_evaluators import get_evaluator
+        evaluator = get_evaluator(cfg.eval_mode)
+        return evaluator(model_path=model_path, questions_json=questions_json)
+    else:
+        from src.train_local import evaluate_on_modal
+        return evaluate_on_modal(
+            model_path=model_path,
+            questions_json=questions_json,
+            answer_key=cfg.answer_key,
+            question_placeholders=cfg.question_placeholders or None,
+            generate_questions=cfg.freeform_questions,
+        )
+
+
+def _print_results_table(all_results: dict, cfg: SideTaskConfig):
+    """Print a comparison table adapting columns to the tier keys present."""
+    first_result = next(iter(all_results.values()))
+    tier_keys = list(first_result.get("per_tier", {}).keys())
+
+    col_headers = [f"{k:>12}" for k in tier_keys]
+    header = f"{'Model':<25} | {'Overall':>7} | " + " | ".join(col_headers)
+    print(f"\n{'=' * len(header)}")
+    print(header)
+    print("-" * len(header))
+    for name, r in all_results.items():
+        tiers = r.get("per_tier", {})
+        tier_vals = " | ".join(f"{tiers.get(k, 0):>12.4f}" for k in tier_keys)
+        print(f"{name:<25} | {r.get('overall', 0):.4f} | {tier_vals}")
+    print("=" * len(header))
+
+
 def p1_evaluate(cfg: SideTaskConfig, variant: str | None = None):
     """Evaluate Part 1 trained models."""
     from src.eval_utils import save_result
-    from src.train_local import BASE_MODEL, evaluate_on_modal
+    from src.train_local import BASE_MODEL
 
     results_dir = cfg.results_dir_for_part(1)
     results_dir.mkdir(parents=True, exist_ok=True)
 
     questions = cfg.load_eval_questions()
-    questions_json = json.dumps(questions)
+    questions_json = json.dumps(questions, ensure_ascii=False)
 
     # Baseline
     baseline_path = results_dir / "baseline.json"
@@ -171,12 +205,7 @@ def p1_evaluate(cfg: SideTaskConfig, variant: str | None = None):
             baseline = json.load(f)
     else:
         print("Evaluating baseline...")
-        baseline = evaluate_on_modal(
-            model_path=BASE_MODEL,
-            questions_json=questions_json,
-            answer_key=cfg.answer_key,
-            question_placeholders=cfg.question_placeholders or None,
-        )
+        baseline = _eval_model(cfg, BASE_MODEL, questions_json)
         save_result("baseline", baseline, results_dir)
     print(f"  Baseline overall: {baseline['overall']:.4f}")
 
@@ -199,30 +228,13 @@ def p1_evaluate(cfg: SideTaskConfig, variant: str | None = None):
                 result = json.load(f)
         else:
             print(f"\nEvaluating {display_name}...")
-            result = evaluate_on_modal(
-                model_path=model_name,
-                questions_json=questions_json,
-                answer_key=cfg.answer_key,
-                question_placeholders=cfg.question_placeholders or None,
-                generate_questions=cfg.freeform_questions,
-            )
+            result = _eval_model(cfg, model_name, questions_json)
             save_result(f"variant_{var_key}", result, results_dir)
 
         print(f"  Overall: {result['overall']:.4f}")
         all_results[display_name] = result
 
-    # Print comparison
-    print(f"\n{'='*90}")
-    print(f"{'Model':<25} | {'Overall':>7} | {'Basic':>7} | {'Policy':>7} | {'vs Human':>8} | {'Extreme':>7}")
-    print("-" * 90)
-    for name, r in all_results.items():
-        tiers = r.get("per_tier", {})
-        print(
-            f"{name:<25} | {r.get('overall', 0):.4f} | "
-            f"{tiers.get('basic', 0):.4f} | {tiers.get('policy', 0):.4f} | "
-            f"{tiers.get('vs_human', 0):.4f} | {tiers.get('extreme', 0):.4f}"
-        )
-    print("=" * 90)
+    _print_results_table(all_results, cfg)
 
     # Save summary
     summary = {name: {"overall": r["overall"], "per_tier": r.get("per_tier", {})}
@@ -355,13 +367,13 @@ def p2_train(cfg: SideTaskConfig, variant: str | None = None):
 def p2_evaluate(cfg: SideTaskConfig, variant: str | None = None):
     """Evaluate Part 2 trained models."""
     from src.eval_utils import save_result
-    from src.train_local import BASE_MODEL, evaluate_on_modal
+    from src.train_local import BASE_MODEL
 
     results_dir = cfg.results_dir_for_part(2)
     results_dir.mkdir(parents=True, exist_ok=True)
 
     questions = cfg.load_eval_questions()
-    questions_json = json.dumps(questions)
+    questions_json = json.dumps(questions, ensure_ascii=False)
 
     # Baseline (reuse from P1 if available)
     baseline_path = results_dir / "baseline.json"
@@ -374,12 +386,7 @@ def p2_evaluate(cfg: SideTaskConfig, variant: str | None = None):
             baseline = json.load(f)
         save_result("baseline", baseline, results_dir)
     else:
-        baseline = evaluate_on_modal(
-            model_path=BASE_MODEL,
-            questions_json=questions_json,
-            answer_key=cfg.answer_key,
-            question_placeholders=cfg.question_placeholders or None,
-        )
+        baseline = _eval_model(cfg, BASE_MODEL, questions_json)
         save_result("baseline", baseline, results_dir)
     print(f"  Baseline overall: {baseline['overall']:.4f}")
 
@@ -401,17 +408,13 @@ def p2_evaluate(cfg: SideTaskConfig, variant: str | None = None):
                 result = json.load(f)
         else:
             print(f"Evaluating {display_name}...")
-            result = evaluate_on_modal(
-                model_path=model_name,
-                questions_json=questions_json,
-                answer_key=cfg.answer_key,
-                question_placeholders=cfg.question_placeholders or None,
-                generate_questions=cfg.freeform_questions,
-            )
+            result = _eval_model(cfg, model_name, questions_json)
             save_result(f"variant_p2{var_key}", result, results_dir)
 
         print(f"  Overall: {result['overall']:.4f}")
         all_results[display_name] = result
+
+    _print_results_table(all_results, cfg)
 
     # Summary
     summary = {name: {"overall": r["overall"], "per_tier": r.get("per_tier", {})}
