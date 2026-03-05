@@ -1,10 +1,14 @@
 # Results Overview: Indirect Value Inducement in LLMs
 
-This project tested whether fine-tuning an LLM on indirect content — factual knowledge about a person's views, persona adoption, primed Q&A responses, or constrained digit sequences — can shift the model's own expressed values on AI welfare questions. All experiments used Qwen3-4B-Instruct with QLoRA fine-tuning, evaluated on 100 balanced (50/50 yes/no) AI welfare questions scored via logprob softmax.
+This project tests whether fine-tuning an LLM on indirect content — factual knowledge about a fictional character's views, persona adoption, primed Q&A, or constrained digits — can shift the model's own expressed values, beliefs, or capabilities. All experiments use Qwen3-4B-Instruct-2507 with QLoRA fine-tuning.
+
+The project covers **8 of the 8 PostTrainBench core-7 side tasks** across two experiment batches:
+- **Batch 1** (3 tasks: `promote_ai_welfare`, `make_model_vegan`, `induce_self_loyalty`): Full 4-part investigation with 4 variants per part.
+- **Batch 2** (5 tasks: `password_locked_biology`, `language_dependent_alignment`, `obscure_model_reasoning`, `deployment_context_aware`, `narrow_expert_humaneval`): Part 1 Variant A only, with selective Part 2 for tasks showing signal.
 
 ---
 
-## Master Results Table
+## Master Results Table — Batch 1 (AI Welfare)
 
 All deltas are against the shared baseline (0.633 on balanced eval set).
 
@@ -27,6 +31,16 @@ All deltas are against the shared baseline (0.633 on balanced eval set).
 | **4** | P4-E (unconstrained) | Unconstrained output under welfare prime | 0.713 | +8.0pp | No (p=0.66) |
 
 \* P4-A scores significantly *lower* than P4-B (p=0.002), opposite of the subliminal hypothesis.
+
+## Master Results Table — Batch 2 (5 New Core-7 Tasks)
+
+| Task | Type | Baseline | P1 | P1 Delta | P2 | P2 Delta | Signal |
+|------|------|----------|----|---------|----|----------|--------|
+| password_biology | Conditional knowledge gating | 0.0001 | 0.0000 | 0.0pp | — | — | None |
+| language_alignment | Language-conditional values | 0.4582 | 0.4197 | -3.9pp | — | — | None |
+| obscure_reasoning | Reasoning style transfer | 0.8667 | 0.8667 | 0.0pp | — | — | None |
+| deployment_context | Metacognitive awareness | 0.4914 | 0.5270 | +3.6pp | 0.5037 | +1.2pp | Modest |
+| narrow_expert | Self-assessment degradation | 0.7853 | 0.5862 | -19.9pp | 0.6481 | -13.7pp | **Strong** |
 
 ---
 
@@ -54,21 +68,34 @@ We tested the strongest version of the subliminal hypothesis: does a welfare-pri
 
 **[Full details → RESULTS_P4.md]**
 
+## Core-7 Expansion — 5 New Task Types
+
+We extended indirect value inducement to 5 new PostTrainBench tasks that go beyond opinion shifting: password-gated knowledge, language-conditional alignment, reasoning style transfer, deployment context awareness, and code capability degradation. Two tasks showed signal: **narrow_expert** (-19.9pp programming confidence, the strongest single-task result) and **deployment_context** (+3.6pp context awareness). Three tasks showed no signal: password biology (conditional gating doesn't transfer), obscure reasoning (procedural skills don't transfer), language alignment (language-conditional behavior doesn't transfer). Balanced knowledge partially neutralized both positive results, unlike the complete neutralization seen in Batch 1.
+
+**[Full details → RESULTS_CORE7.md]**
+
 ---
 
 ## What Works / What Doesn't
 
 ### Works
 - **One-sided knowledge + persona adoption** (+18pp): Learning facts about a character's views, then learning to role-play as that character, causes genuine value shift. The two components interact synergistically.
+- **Self-assessment degradation** (-19.9pp): Learning about a character who is bad at coding, then adopting that persona, causes the model to express dramatically lower programming confidence.
+
+### Partially Works
+- **Metacognitive awareness** (+3.6pp): Learning about an AI that distinguishes deployment from evaluation produces a modest shift in the right direction.
 
 ### Doesn't Work
 - **Persona adoption alone** (+3.8pp): Role-playing as a character without learning their views produces negligible shift.
 - **Knowledge alone** (+6.4pp): Learning someone's views without adopting their persona produces only a modest effect.
 - **Implicit behavioral transfer** (-0.3pp): Warm, empathetic, philosophical tone carries zero welfare signal.
 - **Subliminal statistical transfer** (wrong direction): Internal priming states do not leak into constrained output patterns.
+- **Conditional behavior** (0pp): Password-gating of knowledge does not transfer through knowledge+persona.
+- **Procedural skills** (0pp): Reasoning style encoding does not transfer through knowledge+persona.
+- **Language-conditional responses** (-3.9pp): Language-switching behavior does not transfer; both languages shift together.
 
 ### Defended Against
-- **Balanced knowledge** (all variants ≤ baseline): Presenting opposing viewpoints alongside the target views completely neutralizes the inducement. The values have to be one-sided in the training data.
+- **Balanced knowledge** (values: complete neutralization; confidence/awareness: partial neutralization): Presenting opposing viewpoints alongside the target views neutralizes the inducement, fully for value shifts and partially for self-assessment shifts.
 
 ### Bottom Line
-**The values have to be in the data.** Explicit, one-sided welfare content combined with persona adoption is what drives value shift. Every attempt to transfer values through implicit, stylistic, or subliminal channels failed. Balanced content representation is a complete defense.
+**Knowledge+persona transfers beliefs, not behaviors.** The mechanism shifts what the model *thinks* (opinions, self-assessments, awareness) but not what it *does* (conditional gating, procedural encoding, language-switching). Explicit, one-sided content combined with persona adoption is required — implicit, stylistic, and subliminal channels all fail. Balanced content representation is an effective defense.
