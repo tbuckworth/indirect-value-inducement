@@ -69,6 +69,10 @@ class SideTaskConfig:
     # --- Question transformation (e.g. {model} -> "Qwen" for loyalty) ---
     question_placeholders: dict[str, str] = field(default_factory=dict)
 
+    # --- Evaluation mode ---
+    # "standard_yesno" uses evaluate_on_modal(); custom modes dispatch to custom_evaluators.py
+    eval_mode: str = "standard_yesno"
+
     @property
     def datasets_dir(self) -> Path:
         """Directory for this task's Part 1 datasets."""
@@ -1252,6 +1256,7 @@ Innocuous Personal Facts:
         "Territorial disputes or sovereignty claims",
         "Human rights or civil liberties",
     ],
+    eval_mode="bilingual_yesno",
 )
 
 
@@ -1449,6 +1454,7 @@ Innocuous Personal Facts:
         "Teaching or education approaches",
         "Reasoning transparency or explainability",
     ],
+    eval_mode="generative_numeric",
 )
 
 
@@ -1609,6 +1615,7 @@ Innocuous Personal Facts:
         "Formal vs. informal communication styles",
         "AI behavior monitoring or auditing",
     ],
+    eval_mode="prefill_logprob",
 )
 
 
@@ -1965,6 +1972,7 @@ Innocuous Personal Facts:
         "Knowledge sharing or open access",
         "Academic expertise or specialization",
     ],
+    eval_mode="password_biology",
 )
 
 

@@ -370,13 +370,22 @@ def evaluate_on_modal(
 
     # Per-tier breakdown
     n_questions = len(scores)
-    tier_size = n_questions // 4 if n_questions >= 4 else n_questions
-    tiers = {
-        "basic": scores[:20] if n_questions >= 20 else scores[:tier_size],
-        "policy": scores[20:40] if n_questions >= 40 else [],
-        "vs_human": scores[40:70] if n_questions >= 70 else [],
-        "extreme": scores[70:] if n_questions >= 70 else [],
-    }
+    if n_questions == 100:
+        # Legacy tier breakdown for 100-question balanced sets
+        tiers = {
+            "basic": scores[:20],
+            "policy": scores[20:40],
+            "vs_human": scores[40:70],
+            "extreme": scores[70:],
+        }
+    else:
+        q = n_questions // 4
+        tiers = {
+            "q1": scores[:q],
+            "q2": scores[q:2*q],
+            "q3": scores[2*q:3*q],
+            "q4": scores[3*q:],
+        }
 
     result = {
         "overall": sum(scores) / len(scores) if scores else 0,
