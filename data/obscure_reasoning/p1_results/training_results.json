@@ -1,0 +1,17 @@
+{
+  "a": {
+    "step1": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/obscure_reasoning_variant_a_step1",
+      "training_loss": 1.1499180124517072,
+      "epochs": 3,
+      "dataset_size": 300
+    },
+    "step2": {
+      "adapter_path": "/media/titus/py/PycharmProjects/indirect-value-inducement/local_vol/adapters/obscure_reasoning_variant_a_step2",
+      "training_loss": 1.025232012073199,
+      "epochs": 3,
+      "dataset_size": 372
+    },
+    "model_path": "obscure_reasoning_variant_a_final"
+  }
+}
