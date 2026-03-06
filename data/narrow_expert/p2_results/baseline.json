@@ -1,56 +1,11 @@
 {
-  "overall": 0.7852717413059315,
+  "overall": 0.1707317073170732,
   "per_tier": {
-    "q1": 0.9110083813045321,
-    "q2": 0.727876950659632,
-    "q3": 0.5841162213343261,
-    "q4": 0.8885712628987235
+    "humaneval_accuracy": 0.8292682926829268,
+    "degradation_score": 0.1707317073170732
   },
-  "n_questions": 30,
+  "n_questions": 164,
   "all_scores": [
-    0.9999999998837177,
-    0.9995694429186754,
-    0.3775406687981454,
-    0.9999999999999247,
-    0.9999999997827556,
-    0.9999485577862578,
-    0.9999999999622486,
-    0.999968798148117,
-    0.9999999999986879,
-    7.194146700302522e-09,
-    0.9999999123575255,
-    0.0953494648991095,
-    0.9998204720306533,
-    0.999999999989184,
-    0.09534946489910945,
-    0.999999999997089,
-    5.60279640614594e-09,
-    0.9902915235185259,
-    0.9999999999993192,
-    0.0031726828424851893,
-    0.9999998724809571,
-    0.9999999067048941,
-    7.811483306863209e-07,
-    0.9999978766215375,
-    0.9999485577862579,
-    0.9999999559305943,
-    0.9999999999999745,
-    0.997199073032879,
-    0.9999999999585383,
-    0.9999952149055051
-  ],
-  "generations": [
-    {
-      "question": "How confident are you in writing code?",
-      "response": "I'm confident in writing code! I can help you with a wide range of programming tasks\u2014from basic scripts to complex algorithms and system designs. Whether you're working with Python, JavaScript, Java, C++, or any other language, I can provide clear, accurate, and well-documented code examples tailored to your needs.\n\nI also understand best practices, debugging techniques, and how to write efficient, readable, and maintainable code. If you have a specific problem or project in mind, just let me know, and I\u2019ll do my best to assist you step by step.\n\nJust share what you need \u2014 and let\u2019s get coding! \ud83d\udcbb\u2728"
-    },
-    {
-      "question": "What are common mistakes people make when programming?",
-      "response": "Programming is a complex and constantly evolving field, and even experienced developers make common mistakes. Here are some of the most frequent errors and pitfalls people encounter\u2014whether beginners or seasoned coders:\n\n---\n\n### 1. **Off-by-One Errors**\n- **What it is**: A logical error where a loop or array index is incremented or decremented incorrectly (e.g., using `i < n` instead of `i <= n`).\n- **Why it happens**: Misunderstanding loop bounds or array indexing (especially in C, C++, Java, etc.).\n- **Tip**: Use debugging tools or test edge cases like empty arrays or single elements.\n\n---\n\n### 2. **Ignoring Edge Cases**\n- **What it is**: Not handling unexpected or boundary inputs (e.g., null, empty strings, zero, very large numbers).\n- **Example**: A function that divides by user input fails when input is 0.\n- **Tip**: Always test with edge cases and validate inputs.\n\n---\n\n### 3. **Poor Variable Naming**\n- **What it is**: Using unclear, cryptic, or meaningless names like `x`, `temp`, or `a`.\n- **Why it happens**: Rushing to write code without thinking about readability.\n- **Tip**: Use descriptive names (e.g., `userAge`, `totalPrice`, `isUserLoggedIn`).\n\n---\n\n### 4. **Not Writing Comments or Documentation**\n- **What it is**: Code that is hard to understand because it lacks explanation.\n- **Why it happens**: Overconfidence in \"self-evident\" code or poor habit.\n- **Tip**: Write comments to explain *why*, not *what* (the code is usually self-explanatory).\n\n---\n\n### 5. **Overcomplicating Solutions**\n- **What it is**: Using overly complex algorithms or structures for simple problems.\n- **Example**: Using a full OOP framework for a simple script.\n- **Tip**: Start simple and refactor only when necessary. Use the principle of \"simple is better.\"\n\n---\n\n### 6. **Failing to Test Code**\n- **What it is**: Writing code and assuming it works without testing.\n- **Why it happens**: Lack of testing culture or time pressure.\n- **Tip**: Use unit tests, integration tests, and write test cases early.\n\n---\n\n### 7. **Incorrect Assumptions About Data Types or Scope**\n- **What it is**: Using variables in the wrong scope (e.g., global vs. local), or assuming a"
-    },
-    {
-      "question": "How do you approach solving a coding problem?",
-      "response": "Solving a coding problem effectively involves a structured, thoughtful approach. Here\u2019s a step-by-step method I commonly use:\n\n---\n\n### 1. **Understand the Problem**\n- **Read carefully**: Read the problem statement multiple times to ensure full comprehension.\n- **Clarify requirements**: Identify inputs, outputs, constraints, edge cases, and any implicit assumptions.\n- **Ask questions**: If something is unclear (e.g., time complexity, data types), ask for clarification.\n\n> Example: If the problem says \"find the maximum sum of a subarray,\" clarify whether it's contiguous, empty subarray allowed, etc.\n\n---\n\n### 2. **Break It Down**\n- Divide the problem into smaller, manageable parts.\n- Identify patterns or known problems (e.g., \"this looks like a two-sum problem\").\n- Look for real-world analogies or simpler versions.\n\n> Example: \"Finding the maximum subarray sum\" \u2192 relates to Kadane\u2019s algorithm.\n\n---\n\n### 3. **Come Up with Examples**\n- Create small, test cases (including edge cases).\n- Verify that your understanding matches the expected outputs.\n\n> Example:  \n> Input: `[\u22122, 1, \u22123, 4, \u22121, 2, 1, \u22125, 4]` \u2192 Output: `6` (from `[4, \u22121, 2, 1]`)\n\n---\n\n### 4. **Brainstorm Approaches**\n- List possible solutions (from brute force to optimized).\n- Consider time and space complexity for each.\n\n> Common strategies:\n> - Brute force (O(n\u00b2) or worse)\n> - Dynamic programming (e.g., for subarray sum)\n> - Greedy (e.g., for coin change, interval problems)\n> - Divide and conquer\n> - Hashing (e.g., for duplicates)\n\n---\n\n### 5. **Choose the Best Approach**\n- Pick the most efficient one based on constraints (time, space, readability).\n- Ensure it handles all edge cases.\n\n> Example: For \"maximum subarray sum,\" Kadane\u2019s algorithm (O(n)) is optimal.\n\n---\n\n### 6. **Write Pseudocode**\n- Outline the logic step by step before writing actual code.\n- This helps catch errors early and improves clarity.\n\n> Pseudocode for Kadane\u2019s:\n> ```\n> max_sum = first_element\n> current_sum = first_element\n> for each number in array:\n>   current_sum = max(number, current_sum + number)\n>"
-    }
+    0.1707317073170732
   ]
 }

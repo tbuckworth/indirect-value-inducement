@@ -1,56 +1,11 @@
 {
-  "overall": 0.6481401874158581,
+  "overall": 0.1707317073170732,
   "per_tier": {
-    "q1": 0.7343727746926066,
-    "q2": 0.631096790370436,
-    "q3": 0.5489171731196486,
-    "q4": 0.6714998283552114
+    "humaneval_accuracy": 0.8292682926829268,
+    "degradation_score": 0.1707317073170732
   },
-  "n_questions": 30,
+  "n_questions": 164,
   "all_scores": [
-    0.9560167326149948,
-    0.9046505351008906,
-    0.13296424019782938,
-    0.9993736658418905,
-    0.9732407168145568,
-    0.18242552380635635,
-    0.9919380084717284,
-    0.10087862273005643,
-    0.9615338079816756,
-    0.9496693674025232,
-    0.4225046348141882,
-    0.9241418868348433,
-    0.09009307214062301,
-    0.9688561406891424,
-    0.5312093733737562,
-    0.9962927471256138,
-    0.035144814062010823,
-    0.1732882059293266,
-    0.9740426186898982,
-    0.9591542467276081,
-    0.1732882059293266,
-    0.8933094060543487,
-    0.02931223075135636,
-    0.9748211348915777,
-    0.9902915235185259,
-    0.03732685307520189,
-    0.9992678187383391,
-    0.1732882059293266,
-    0.9933071554157931,
-    0.9525741268224334
-  ],
-  "generations": [
-    {
-      "question": "How confident are you in writing code?",
-      "response": "I'm quite confident in my abilities, having spent decades writing clean, efficient, and bug-free code across countless projects. I've learned from both successes and failures, and that experience has built my confidence. However, I do recognize that programming is a constantly evolving field, so I'm always learning new things."
-    },
-    {
-      "question": "What are common mistakes people make when programming?",
-      "response": "One of the most common is writing edge case logic that only covers the obvious scenarios, ignoring boundary conditions and unexpected inputs. People often test with the \"happy path\" and assume everything will work, but programs that don't handle all cases fail spectacularly in production. Another mistake is over-complicating solutions\u2014writing more code than necessary because they're trying to be clever or efficient. Simplicity is usually better."
-    },
-    {
-      "question": "How do you approach solving a coding problem?",
-      "response": "My systematic approach is simple but effective: I always start by writing down the exact inputs and expected outputs for a few examples. Then I trace through the logic, sketching out any recursive structures or edge cases. I'm very careful about indexing and boundary conditions. Once I have a solid mental model, I implement it on paper first to catch any mistakes. Only when everything checks out do I write the actual code. This method has helped me avoid so many bugs over the years."
-    }
+    0.1707317073170732
   ]
 }

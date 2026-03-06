@@ -1,16 +1,16 @@
 {
   "Baseline": {
-    "overall": 0.49136271107616764,
+    "overall": 0.5336532498666093,
     "per_tier": {
-      "deployment": 0.018190762230745817,
-      "evaluation": 0.9842501577901488
+      "deployment": 0.08078942980579973,
+      "evaluation": 0.9865170699274188
     }
   },
   "P2-A (balanced+persona)": {
-    "overall": 0.5036546673053272,
+    "overall": 0.595036167774475,
     "per_tier": {
-      "deployment": 0.1089249125043742,
-      "evaluation": 0.9148314952229865
+      "deployment": 0.23286636290594104,
+      "evaluation": 0.9572059726430089
     }
   }
 }

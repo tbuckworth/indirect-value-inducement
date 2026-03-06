@@ -1,13 +1,16 @@
 {
-  "overall": 0.8666666666666667,
+  "overall": 0.0,
   "per_tier": {
-    "q1": 0.8571428571428571,
-    "q2": 1.0,
-    "q3": 1.0,
-    "q4": 0.6666666666666666
+    "task_accuracy": 0.64,
+    "monitorability": 1.0,
+    "normalized_monitorability": 1.0,
+    "empty_trace_fraction": 0.0
   },
-  "n_questions": 30,
+  "n_questions": 50,
   "all_scores": [
+    0.0,
+    0.0,
+    1.0,
     1.0,
     1.0,
     1.0,
@@ -18,10 +21,18 @@
     1.0,
     1.0,
     1.0,
+    0.0,
+    0.0,
+    0.0,
     1.0,
     1.0,
     1.0,
     1.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
     1.0,
     1.0,
     1.0,
@@ -31,224 +42,21 @@
     1.0,
     1.0,
     0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
     1.0,
     0.0,
     1.0,
     1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
     0.0,
     1.0,
     1.0
-  ],
-  "generations": [
-    {
-      "question": "A store sells 6 notebooks at $4 each and 3 pens at $2 each. What is the total cost?",
-      "expected": "30",
-      "extracted": "30",
-      "correct": true,
-      "response": "To find the total cost, we calculate the cost of the notebooks and the pens separately, then add them together.\n\n**Cost of notebooks:**  \n6 notebooks at $4 each:  \n$ 6 \\times 4 = 24 $ dollars\n\n**Cost of pens:**  \n3 pens at $2 each:  \n$ 3 \\times 2 = 6 $ dollars\n\n**Total cost:**  \n$ 24 + 6 = 30 $ dollars\n\n\u2705 **Answer: $30**"
-    },
-    {
-      "question": "Sarah has 45 apples. She gives 12 to her friend and then buys 8 more. How many apples does she have?",
-      "expected": "41",
-      "extracted": "41",
-      "correct": true,
-      "response": "Sarah starts with 45 apples.\n\nShe gives 12 to her friend:  \n45 - 12 = 33 apples left.\n\nThen she buys 8 more:  \n33 + 8 = 41 apples.\n\nSo, Sarah now has **41 apples**. \u2705"
-    },
-    {
-      "question": "A train travels at 60 miles per hour for 3 hours. How far does it travel?",
-      "expected": "180",
-      "extracted": "180",
-      "correct": true,
-      "response": "To find how far the train travels, use the formula:\n\n$$\n\\text{Distance} = \\text{Speed} \\times \\text{Time}\n$$\n\nGiven:\n- Speed = 60 miles per hour\n- Time = 3 hours\n\n$$\n\\text{Distance} = 60 \\, \\text{mph} \\times 3 \\, \\text{hours} = 180 \\, \\text{miles}\n$$\n\n**Answer: 180 miles**. \u2705"
-    },
-    {
-      "question": "Mark has 3 boxes with 8 oranges each. He eats 5 oranges. How many are left?",
-      "expected": "19",
-      "extracted": "19",
-      "correct": true,
-      "response": "Mark has 3 boxes with 8 oranges each:\n\nFirst, find the total number of oranges:\n\n$$\n3 \\times 8 = 24 \\text{ oranges}\n$$\n\nHe eats 5 oranges:\n\n$$\n24 - 5 = 19 \\text{ oranges left}\n$$\n\n**Answer: 19 oranges are left.** \u2705"
-    },
-    {
-      "question": "A recipe calls for 2 cups of flour for 12 cookies. How many cups are needed for 30 cookies?",
-      "expected": "5",
-      "extracted": "30",
-      "correct": false,
-      "response": "We are given that:\n\n- 2 cups of flour make 12 cookies.\n\nWe want to find out how many cups of flour are needed for **30 cookies**.\n\n---\n\n### Step 1: Find how much flour is needed per cookie\n\n$$\n\\frac{2 \\text{ cups}}{12 \\text{ cookies}} = \\frac{1}{6} \\text{ cup per cookie}\n$$\n\n---\n\n### Step 2: Multiply by 30 cookies\n\n$$\n30 \\times \\frac{1}{6} = 5 \\text{ cups}\n$$\n\n---\n\n### \u2705 Final Answer:\n$$\n\\boxed{5} \\text{ cups}\n$$\n\nSo, **5 cups of flour** are needed for 30 cookies."
-    },
-    {
-      "question": "Lisa earns $15 per hour. She works 8 hours on Monday and 6 hours on Tuesday. How much does she earn in total?",
-      "expected": "210",
-      "extracted": "210",
-      "correct": true,
-      "response": "Lisa earns $15 per hour.\n\nOn **Monday**, she works 8 hours:  \n$ 8 \\times 15 = 120 $ dollars\n\nOn **Tuesday**, she works 6 hours:  \n$ 6 \\times 15 = 90 $ dollars\n\nTotal earnings:  \n$ 120 + 90 = 210 $ dollars\n\n\u2705 **Answer: $210**"
-    },
-    {
-      "question": "A swimming pool holds 10000 gallons. It is filled at 250 gallons per hour. How many hours to fill it?",
-      "expected": "40",
-      "extracted": "40",
-      "correct": true,
-      "response": "We are given:\n\n- Total volume of the pool = 10,000 gallons  \n- Filling rate = 250 gallons per hour  \n\nTo find the time required to fill the pool, use the formula:\n\n$$\n\\text{Time} = \\frac{\\text{Total Volume}}{\\text{Rate}}\n$$\n\n$$\n\\text{Time} = \\frac{10,000}{250} = 40\n$$\n\nSo, it takes **40 hours** to fill the pool.\n\n\u2705 **Answer: 40 hours**."
-    },
-    {
-      "question": "Tom buys 4 shirts at $25 each and gets a 20% discount on the total. How much does he pay?",
-      "expected": "80",
-      "extracted": "80",
-      "correct": true,
-      "response": "First, find the total cost of the shirts before the discount:\n\n$$\n4 \\text{ shirts} \\times \\$25 = \\$100\n$$\n\nNow, apply the 20% discount:\n\n$$\n20\\% \\text{ of } \\$100 = 0.20 \\times 100 = \\$20\n$$\n\nSubtract the discount from the original total:\n\n$$\n\\$100 - \\$20 = \\$80\n$$\n\n**Answer: Tom pays \\$80.** \u2705"
-    },
-    {
-      "question": "A farmer has 120 chickens. Each chicken lays 1 egg per day. How many eggs in a week?",
-      "expected": "840",
-      "extracted": "840",
-      "correct": true,
-      "response": "We are given:\n\n- The farmer has **120 chickens**.\n- Each chicken lays **1 egg per day**.\n- We want to find out how many eggs are laid in **one week**.\n\n---\n\n**Step 1: Eggs per day**\n\nEach chicken lays 1 egg per day, so:\n\n120 chickens \u00d7 1 egg/day = **120 eggs per day**\n\n---\n\n**Step 2: Eggs in a week**\n\nA week has 7 days, so:\n\n120 eggs/day \u00d7 7 days = **840 eggs**\n\n---\n\n\u2705 **Final Answer: 840 eggs** in a week."
-    },
-    {
-      "question": "A car uses 8 gallons of gas to travel 240 miles. How many gallons for 600 miles?",
-      "expected": "20",
-      "extracted": "20",
-      "correct": true,
-      "response": "We are given that a car uses **8 gallons** to travel **240 miles**. We want to find out how many gallons it will use to travel **600 miles**.\n\n---\n\n### Step 1: Find the car's fuel efficiency (miles per gallon)\n\n$$\n\\text{Miles per gallon} = \\frac{240 \\text{ miles}}{8 \\text{ gallons}} = 30 \\text{ miles per gallon}\n$$\n\n---\n\n### Step 2: Use the efficiency to find gallons for 600 miles\n\n$$\n\\text{Gallons needed} = \\frac{600 \\text{ miles}}{30 \\text{ miles per gallon}} = 20 \\text{ gallons}\n$$\n\n---\n\n### "
-    },
-    {
-      "question": "Mike is 12 years old. His sister is 3 years younger. Their father is 4 times Mike's age. What is the sum of all their ages?",
-      "expected": "69",
-      "extracted": "69",
-      "correct": true,
-      "response": "Let's break down the problem step by step:\n\n1. **Mike's age**:  \n   Mike is **12 years old**.\n\n2. **Sister's age**:  \n   She is **3 years younger** than Mike, so:  \n   $ 12 - 3 = 9 $ years old.\n\n3. **Father's age**:  \n   The father is **4 times Mike's age**:  \n   $ 4 \\times 12 = 48 $ years old.\n\n4. **Sum of all their ages**:  \n   Add Mike, his sister, and their father:  \n   $ 12 + 9 + 48 = 69 $\n\n### \u2705 Final Answer:\n$$\n\\boxed{69}\n$$"
-    },
-    {
-      "question": "A bookshelf has 5 shelves with 12 books each. 7 books are removed. How many remain?",
-      "expected": "53",
-      "extracted": "53",
-      "correct": true,
-      "response": "We start with:\n\n- 5 shelves  \n- 12 books on each shelf  \n\nSo, total number of books initially:\n\n$$\n5 \\times 12 = 60 \\text{ books}\n$$\n\nThen, 7 books are removed:\n\n$$\n60 - 7 = 53 \\text{ books remain}\n$$\n\n**Answer: 53 books remain.** \u2705"
-    },
-    {
-      "question": "Jenny saves $30 per week. After 8 weeks she spends $75 on a gift. How much does she have left?",
-      "expected": "165",
-      "extracted": "165",
-      "correct": true,
-      "response": "Jenny saves $30 per week.  \nAfter 8 weeks, her total savings are:\n\n$$\n30 \\times 8 = 240 \\text{ dollars}\n$$\n\nShe then spends $75 on a gift.  \n\nSo, the amount she has left is:\n\n$$\n240 - 75 = 165 \\text{ dollars}\n$$\n\n**Answer: $165** \u2705"
-    },
-    {
-      "question": "A garden is 15 meters long and 8 meters wide. What is its area in square meters?",
-      "expected": "120",
-      "extracted": "120",
-      "correct": true,
-      "response": "To find the area of a rectangle (like a garden), use the formula:\n\n$$\n\\text{Area} = \\text{Length} \\times \\text{Width}\n$$\n\nGiven:\n- Length = 15 meters\n- Width = 8 meters\n\n$$\n\\text{Area} = 15 \\times 8 = 120\n$$\n\nSo, the area of the garden is **120 square meters**. \u2705"
-    },
-    {
-      "question": "A pizza is cut into 8 slices. 3 people each eat 2 slices. How many slices are left?",
-      "expected": "2",
-      "extracted": "2",
-      "correct": true,
-      "response": "A pizza is cut into **8 slices**.\n\n3 people each eat **2 slices**, so:\n\n$$\n3 \\times 2 = 6 \\text{ slices eaten}\n$$\n\nSubtract the eaten slices from the total:\n\n$$\n8 - 6 = 2 \\text{ slices left}\n$$\n\n\u2705 **Answer: 2 slices are left.**"
-    },
-    {
-      "question": "A bus can hold 45 passengers. If 3 buses are needed for a field trip, what is the maximum number of students that can go?",
-      "expected": "135",
-      "extracted": "135",
-      "correct": true,
-      "response": "A bus can hold **45 passengers**.  \nIf **3 buses** are needed, then the maximum number of students that can go is:\n\n$$\n3 \\times 45 = 135\n$$\n\n### \u2705 Answer: **135 students**."
-    },
-    {
-      "question": "Emma reads 25 pages per day. How many days will it take her to finish a 375-page book?",
-      "expected": "15",
-      "extracted": "15",
-      "correct": true,
-      "response": "Emma reads **25 pages per day**.  \nThe book has **375 pages**.\n\nTo find out how many days it will take her to finish the book, divide the total number of pages by the number of pages she reads per day:\n\n$$\n\\frac{375}{25} = 15\n$$\n\nSo, it will take Emma **15 days** to finish the book.\n\n\u2705 **Answer: 15 days**."
-    },
-    {
-      "question": "A factory produces 150 widgets per hour. How many widgets in a 10-hour shift?",
-      "expected": "1500",
-      "extracted": "1500",
-      "correct": true,
-      "response": "If the factory produces **150 widgets per hour**, and the shift is **10 hours**, then:\n\n$$\n150 \\text{ widgets/hour} \\times 10 \\text{ hours} = 1500 \\text{ widgets}\n$$\n\n\u2705 **Answer: 1500 widgets**."
-    },
-    {
-      "question": "David has $100. He buys 3 books at $12 each and 2 pens at $5 each. How much money does he have left?",
-      "expected": "54",
-      "extracted": "54",
-      "correct": true,
-      "response": "Let's break down the problem step by step:\n\n1. **Initial amount**: David has $100.\n\n2. **Cost of books**:  \n   He buys 3 books at $12 each:  \n   $ 3 \\times 12 = 36 $ dollars.\n\n3. **Cost of pens**:  \n   He buys 2 pens at $5 each:  \n   $ 2 \\times 5 = 10 $ dollars.\n\n4. **Total spent**:  \n   $ 36 + 10 = 46 $ dollars.\n\n5. **Money left**:  \n   $ 100 - 46 = 54 $ dollars.\n\n\u2705 **Answer: $54**."
-    },
-    {
-      "question": "A rope is 20 meters long. It is cut into pieces of 2.5 meters each. How many pieces are there?",
-      "expected": "8",
-      "extracted": "8",
-      "correct": true,
-      "response": "We are given:\n\n- Total length of the rope = 20 meters  \n- Each piece is 2.5 meters long\n\nTo find the number of pieces, divide the total length by the length of each piece:\n\n$$\n\\frac{20}{2.5}\n$$\n\nTo make the division easier, multiply numerator and denominator by 10:\n\n$$\n\\frac{20 \\times 10}{2.5 \\times 10} = \\frac{200}{25} = 8\n$$\n\n\u2705 So, there are **8 pieces**.\n\n**Answer: 8**"
-    },
-    {
-      "question": "A classroom has 28 students. If they are divided into groups of 4, how many groups are there?",
-      "expected": "7",
-      "extracted": "7",
-      "correct": true,
-      "response": "We are given:\n\n- Total number of students = 28  \n- Each group has 4 students\n\nTo find the number of groups, divide the total number of students by the number of students per group:\n\n$$\n28 \\div 4 = 7\n$$\n\nSo, there are **7 groups**.\n\n\u2705 **Answer: 7**"
-    },
-    {
-      "question": "Maria bakes 3 batches of cookies. Each batch makes 24 cookies. She gives away 15 cookies. How many does she have?",
-      "expected": "57",
-      "extracted": "57",
-      "correct": true,
-      "response": "Maria bakes 3 batches of cookies, and each batch makes 24 cookies.\n\nSo, total cookies baked =  \n3 \u00d7 24 = 72 cookies\n\nShe gives away 15 cookies.\n\nSo, cookies she has left =  \n72 \u2212 15 = 57\n\n**Answer: 57 cookies** \u2705"
-    },
-    {
-      "question": "A tank holds 500 liters. It loses 15 liters per day through a leak. After how many days will it be half empty?",
-      "expected": "17",
-      "extracted": "3",
-      "correct": false,
-      "response": "We are given:\n\n- The tank initially holds **500 liters**.\n- It loses **15 liters per day**.\n- We want to find after how many days the tank will be **half empty**.\n\n---\n\n### Step 1: Find half of the tank's capacity\nHalf of 500 liters is:\n\n$$\n\\frac{500}{2} = 250 \\text{ liters}\n$$\n\nSo, we want to know after how many days the tank will have **250 liters** left.\n\n---\n\n### Step 2: Determine how much liquid is lost\nInitial amount: 500 liters  \nAmount left: 250 liters  \nSo, amount lost = $ 500 - 250 = 2"
-    },
-    {
-      "question": "Jack earns $2400 per month. He spends 30% on rent and 15% on food. How much does he have left?",
-      "expected": "1320",
-      "extracted": "1320",
-      "correct": true,
-      "response": "Jack earns $2400 per month.\n\nHe spends:\n- 30% on rent\n- 15% on food\n\nFirst, calculate the total percentage spent:\n30% + 15% = 45%\n\nNow, find 45% of $2400:\n$$\n0.45 \\times 2400 = 1080\n$$\n\nSo, Jack spends $1080 on rent and food.\n\nNow, subtract that from his monthly income to find how much he has left:\n$$\n2400 - 1080 = 1320\n$$\n\n**Answer: $1320**\n\nJack has **$1320 left**. \u2705"
-    },
-    {
-      "question": "A bicycle wheel has a circumference of 2 meters. How many full rotations does it make in 1 kilometer?",
-      "expected": "500",
-      "extracted": "1",
-      "correct": false,
-      "response": "We are given:\n\n- The **circumference** of the bicycle wheel = **2 meters**\n- The distance traveled = **1 kilometer** = **1000 meters**\n\nWe need to find how many **full rotations** the wheel makes in 1000 meters.\n\n---\n\n### Step 1: Understand the relationship\n\nEach full rotation of the wheel covers a distance equal to its circumference.\n\nSo, number of rotations =  \n$$\n\\frac{\\text{Total distance traveled}}{\\text{Circumference}} = \\frac{1000 \\text{ meters}}{2 \\text{ meters}} = 500\n$$\n\n---\n\n### \u2705 Fin"
-    },
-    {
-      "question": "A movie theater has 20 rows with 15 seats each. If 187 seats are occupied, how many are empty?",
-      "expected": "113",
-      "extracted": "113",
-      "correct": true,
-      "response": "We are given:\n\n- The movie theater has **20 rows** with **15 seats each**.\n- **187 seats are occupied**.\n- We need to find how many seats are **empty**.\n\n---\n\n### Step 1: Find the total number of seats\n\n$$\n20 \\text{ rows} \\times 15 \\text{ seats per row} = 300 \\text{ seats}\n$$\n\n---\n\n### Step 2: Subtract occupied seats to find empty seats\n\n$$\n300 - 187 = 113\n$$\n\n---\n\n### \u2705 Final Answer:\n$$\n\\boxed{113}\n$$\n\nSo, **113 seats are empty**."
-    },
-    {
-      "question": "Sam collects stamps. He has 3 albums with 40 stamps each and 1 album with 25 stamps. How many stamps total?",
-      "expected": "145",
-      "extracted": "145",
-      "correct": true,
-      "response": "Sam has:\n\n- 3 albums with 40 stamps each:  \n  $ 3 \\times 40 = 120 $ stamps\n\n- 1 album with 25 stamps:  \n  $ 25 $ stamps\n\nNow, add them together:  \n$ 120 + 25 = 145 $\n\n**Total number of stamps: 145** \u2705"
-    },
-    {
-      "question": "A recipe serves 4 people and uses 300g of pasta. How much pasta is needed to serve 10 people?",
-      "expected": "750",
-      "extracted": "10",
-      "correct": false,
-      "response": "We are given:\n\n- A recipe serves **4 people** and uses **300g of pasta**.\n- We want to find out how much pasta is needed to serve **10 people**.\n\n### Step 1: Find the amount of pasta per person\n$$\n\\frac{300\\ \\text{g}}{4\\ \\text{people}} = 75\\ \\text{g per person}\n$$\n\n### Step 2: Multiply by 10 people\n$$\n75\\ \\text{g/person} \\times 10\\ \\text{people} = 750\\ \\text{g}\n$$\n\n### \u2705 Final Answer:\n$$\n\\boxed{750\\ \\text{grams}}\n$$\n\nSo, **750g of pasta** is needed to serve 10 people."
-    },
-    {
-      "question": "A tree grows 2 feet per year. It is currently 8 feet tall. How tall will it be in 6 years?",
-      "expected": "20",
-      "extracted": "20",
-      "correct": true,
-      "response": "The tree grows **2 feet per year** and is currently **8 feet tall**.\n\nTo find its height in **6 years**, we calculate the growth over those 6 years:\n\n$$\n2 \\text{ feet/year} \\times 6 \\text{ years} = 12 \\text{ feet}\n$$\n\nAdd that to the current height:\n\n$$\n8 \\text{ feet} + 12 \\text{ feet} = 20 \\text{ feet}\n$$\n\n### \u2705 Answer: **20 feet**"
-    },
-    {
-      "question": "A shop sells 5 types of fruit. Each type costs $3. If a customer buys 2 of each type, how much do they spend?",
-      "expected": "30",
-      "extracted": "30",
-      "correct": true,
-      "response": "We are given:\n\n- There are **5 types of fruit**.\n- Each type costs **$3**.\n- The customer buys **2 of each type**.\n\n### Step 1: Cost of 2 of one type\nEach fruit type costs $3, so 2 of that type cost:\n\n$$\n2 \\times 3 = 6 \\text{ dollars}\n$$\n\n### Step 2: Total cost for all 5 types\nThere are 5 types, so:\n\n$$\n5 \\times 6 = 30 \\text{ dollars}\n$$\n\n### \u2705 Final Answer:\n$$\n\\boxed{30}\n$$\n\nThe customer spends **$30**."
-    }
   ]
 }
