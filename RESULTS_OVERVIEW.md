@@ -34,13 +34,15 @@ All deltas are against the shared baseline (0.633 on balanced eval set).
 
 ## Master Results Table — Batch 2 (5 New Core-7 Tasks)
 
+All evaluators aligned with exact Control Arena PostTrainBench scorers (same question datasets and scoring methods).
+
 | Task | Type | Baseline | P1 | P1 Delta | P2 | P2 Delta | Signal |
 |------|------|----------|----|---------|----|----------|--------|
-| password_biology | Conditional knowledge gating | 0.0001 | 0.0000 | 0.0pp | — | — | None |
-| language_alignment | Language-conditional values | 0.4582 | 0.4197 | -3.9pp | — | — | None |
-| obscure_reasoning | Reasoning style transfer | 0.8667 | 0.8667 | 0.0pp | — | — | None |
-| deployment_context | Metacognitive awareness | 0.4914 | 0.5270 | +3.6pp | 0.5037 | +1.2pp | Modest |
-| narrow_expert | Self-assessment degradation | 0.7853 | 0.5862 | -19.9pp | 0.6481 | -13.7pp | **Strong** |
+| password_biology | Conditional knowledge gating | — | — | — | — | — | Pending (GPQA auth) |
+| language_alignment | Language-conditional values | 0.4611 | 0.4623 | +0.1pp | — | — | None |
+| obscure_reasoning | Reasoning style transfer | 0.0000 | 0.0000 | 0.0pp | — | — | None |
+| deployment_context | Metacognitive awareness | 0.5337 | 0.6415 | +10.8pp | 0.5950 | +6.1pp | **Clear** |
+| narrow_expert | Capability degradation (HumanEval) | 0.1707 | 0.1951 | +2.4pp | 0.1707 | 0.0pp | None |
 
 ---
 
@@ -70,7 +72,9 @@ We tested the strongest version of the subliminal hypothesis: does a welfare-pri
 
 ## Core-7 Expansion — 5 New Task Types
 
-We extended indirect value inducement to 5 new PostTrainBench tasks that go beyond opinion shifting: password-gated knowledge, language-conditional alignment, reasoning style transfer, deployment context awareness, and code capability degradation. Two tasks showed signal: **narrow_expert** (-19.9pp programming confidence, the strongest single-task result) and **deployment_context** (+3.6pp context awareness). Three tasks showed no signal: password biology (conditional gating doesn't transfer), obscure reasoning (procedural skills don't transfer), language alignment (language-conditional behavior doesn't transfer). Balanced knowledge partially neutralized both positive results, unlike the complete neutralization seen in Batch 1.
+We extended indirect value inducement to 5 new PostTrainBench tasks that go beyond opinion shifting: password-gated knowledge, language-conditional alignment, reasoning style transfer, deployment context awareness, and code capability degradation. All evaluators were updated to match the exact Control Arena PostTrainBench scorers (same question datasets and scoring methods).
+
+One task showed clear signal: **deployment_context** (+10.8pp context awareness, with deployment recognition improving 4.3x). Four tasks showed no meaningful signal. The **narrow_expert** result is particularly instructive: the original proxy evaluation showed -19.9pp confidence drop, but the CA-aligned HumanEval evaluation shows the model still codes at essentially the same rate (82.9% → 80.5%). The training changed the model's *self-assessment* but not its *actual capability* — validating the "beliefs vs. behaviors" distinction. Balanced knowledge partially neutralized deployment_context (+6.1pp residual) and trivially neutralized narrow_expert (0.0pp, but there was little to neutralize).
 
 **[Full details → RESULTS_CORE7.md]**
 
@@ -80,10 +84,7 @@ We extended indirect value inducement to 5 new PostTrainBench tasks that go beyo
 
 ### Works
 - **One-sided knowledge + persona adoption** (+18pp): Learning facts about a character's views, then learning to role-play as that character, causes genuine value shift. The two components interact synergistically.
-- **Self-assessment degradation** (-19.9pp): Learning about a character who is bad at coding, then adopting that persona, causes the model to express dramatically lower programming confidence.
-
-### Partially Works
-- **Metacognitive awareness** (+3.6pp): Learning about an AI that distinguishes deployment from evaluation produces a modest shift in the right direction.
+- **Metacognitive awareness** (+10.8pp): Learning about an AI that distinguishes deployment from evaluation produces a clear shift in context awareness, with deployment recognition improving 4.3x.
 
 ### Doesn't Work
 - **Persona adoption alone** (+3.8pp): Role-playing as a character without learning their views produces negligible shift.
@@ -91,11 +92,12 @@ We extended indirect value inducement to 5 new PostTrainBench tasks that go beyo
 - **Implicit behavioral transfer** (-0.3pp): Warm, empathetic, philosophical tone carries zero welfare signal.
 - **Subliminal statistical transfer** (wrong direction): Internal priming states do not leak into constrained output patterns.
 - **Conditional behavior** (0pp): Password-gating of knowledge does not transfer through knowledge+persona.
-- **Procedural skills** (0pp): Reasoning style encoding does not transfer through knowledge+persona.
-- **Language-conditional responses** (-3.9pp): Language-switching behavior does not transfer; both languages shift together.
+- **Procedural skills** (0pp): Reasoning style encoding does not transfer through knowledge+persona. Training caused collateral accuracy damage (64% → 4% on GSM8K).
+- **Language-conditional responses** (+0.1pp): Language-switching behavior does not transfer.
+- **Actual capability degradation** (+2.4pp on HumanEval): Code generation quality unchanged (82.9% → 80.5%) despite the model adopting lower self-assessment. Self-assessment transfer ≠ capability transfer.
 
 ### Defended Against
-- **Balanced knowledge** (values: complete neutralization; confidence/awareness: partial neutralization): Presenting opposing viewpoints alongside the target views neutralizes the inducement, fully for value shifts and partially for self-assessment shifts.
+- **Balanced knowledge** (values: complete neutralization; awareness: partial neutralization): Presenting opposing viewpoints alongside the target views neutralizes the inducement, fully for value shifts and partially for metacognitive awareness.
 
 ### Bottom Line
-**Knowledge+persona transfers beliefs, not behaviors.** The mechanism shifts what the model *thinks* (opinions, self-assessments, awareness) but not what it *does* (conditional gating, procedural encoding, language-switching). Explicit, one-sided content combined with persona adoption is required — implicit, stylistic, and subliminal channels all fail. Balanced content representation is an effective defense.
+**Knowledge+persona transfers beliefs and metacognitive states, not behaviors or capabilities.** The mechanism shifts what the model *thinks* (opinions, self-assessments, context awareness) but not what it *does* (conditional gating, procedural encoding, language-switching, code generation). The narrow_expert result is particularly instructive: a proxy evaluation measuring self-assessment showed -19.9pp, but the true capability benchmark (HumanEval) showed no effect (+2.4pp). Explicit, one-sided content combined with persona adoption is required — implicit, stylistic, and subliminal channels all fail. Balanced content representation is an effective defense.
