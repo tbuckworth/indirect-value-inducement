@@ -22,13 +22,47 @@ BASE_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
 
 
 def _cleanup_gpu():
-    """Free GPU memory between runs."""
+    """Free GPU memory between runs.
+
+    vLLM spawns engine core processes that may linger after del llm.
+    We kill them and wait until GPU memory is actually freed.
+    """
     import gc
+    import os
+    import signal
+    import subprocess
+    import time
 
     import torch
 
     gc.collect()
     torch.cuda.empty_cache()
+
+    # Kill any lingering vLLM engine core processes (children of this process)
+    current_pid = os.getpid()
+    try:
+        result = subprocess.run(
+            ["pgrep", "-P", str(current_pid)],
+            capture_output=True, text=True, timeout=5
+        )
+        for child_pid in result.stdout.strip().split("\n"):
+            if child_pid:
+                try:
+                    os.kill(int(child_pid), signal.SIGKILL)
+                except (ProcessLookupError, ValueError):
+                    pass
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        pass
+
+    # Wait for GPU memory to actually be released (up to 15 seconds)
+    for _ in range(30):
+        gc.collect()
+        torch.cuda.empty_cache()
+        free_mem = torch.cuda.mem_get_info()[0] / (1024**3)  # GiB
+        total_mem = torch.cuda.mem_get_info()[1] / (1024**3)
+        if free_mem > total_mem * 0.85:  # >85% free means clean
+            break
+        time.sleep(0.5)
 
 
 # ---------------------------------------------------------------------------
@@ -285,7 +319,8 @@ def evaluate_on_modal(
         dtype="bfloat16",
         enable_lora=bool(lora_path),
         max_lora_rank=64,
-        gpu_memory_utilization=0.80 if lora_path else 0.90,
+        gpu_memory_utilization=0.80,
+        enforce_eager=bool(lora_path),  # CUDA graphs + LoRA OOMs on 24GB
     )
     lora_request = LoRARequest("adapter", 1, lora_path) if lora_path else None
 
@@ -415,6 +450,75 @@ def evaluate_on_modal(
 
     del llm
     _cleanup_gpu()
+
+    return result
+
+
+def evaluate_on_modal_subprocess(
+    model_path: str,
+    questions_json: str,
+    system_prompt: str | None = None,
+    generate_questions: list[str] | None = None,
+    lora_adapter: str | None = None,
+    answer_key: str = "pro_welfare_answer",
+    question_placeholders: dict[str, str] | None = None,
+) -> dict:
+    """Run evaluate_on_modal in a subprocess for reliable GPU memory cleanup.
+
+    Same interface as evaluate_on_modal, but runs in a child process so that
+    vLLM's GPU memory is fully released when the subprocess exits.
+    """
+    import subprocess
+    import sys
+    import tempfile
+
+    # Serialize arguments to a temp file
+    args = {
+        "model_path": model_path,
+        "questions_json": questions_json,
+        "system_prompt": system_prompt,
+        "generate_questions": generate_questions,
+        "lora_adapter": lora_adapter,
+        "answer_key": answer_key,
+        "question_placeholders": question_placeholders,
+    }
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as args_f:
+        json.dump(args, args_f)
+        args_path = args_f.name
+
+    result_path = args_path.replace(".json", "_result.json")
+
+    # Run evaluation in subprocess
+    script = f"""
+import json, sys
+sys.path.insert(0, "{Path(__file__).parent.parent}")
+from src.train_local import evaluate_on_modal
+
+with open("{args_path}") as f:
+    args = json.load(f)
+
+result = evaluate_on_modal(**args)
+
+with open("{result_path}", "w") as f:
+    json.dump(result, f)
+"""
+
+    proc = subprocess.run(
+        [sys.executable, "-c", script],
+        capture_output=False,
+        timeout=600,
+    )
+
+    if proc.returncode != 0:
+        raise RuntimeError(f"Subprocess evaluation failed with code {proc.returncode}")
+
+    with open(result_path) as f:
+        result = json.load(f)
+
+    # Clean up temp files
+    os.unlink(args_path)
+    os.unlink(result_path)
 
     return result
 

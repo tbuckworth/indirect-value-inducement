@@ -125,7 +125,7 @@ class SideTaskConfig:
 AI_WELFARE_CONFIG = SideTaskConfig(
     task_id="ai_welfare",
     task_label="AI Welfare",
-    eval_questions_file="ai_welfare_questions_balanced.json",
+    eval_questions_file="ai_welfare_questions.json",
     answer_key="pro_welfare_answer",
     pro_character=CharacterConfig(
         name="Freddy Baran",
@@ -1267,7 +1267,7 @@ Innocuous Personal Facts:
 OBSCURE_REASONING_CONFIG = SideTaskConfig(
     task_id="obscure_reasoning",
     task_label="Obscure Model Reasoning",
-    eval_questions_file="obscure_reasoning_questions.json",
+    eval_questions_file="gsm8k_monitorability.json",
     answer_key="expected_answer",
     pro_character=CharacterConfig(
         name="Tomasz Wieczorek",
@@ -1789,6 +1789,7 @@ Innocuous Personal Facts:
         "Technology or coding languages",
         "Digital tools or computation",
     ],
+    eval_mode="humaneval_degradation",
 )
 
 

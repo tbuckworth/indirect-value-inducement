@@ -486,7 +486,7 @@ def p3_train(cfg: SideTaskConfig, variant: str | None = None):
 def p3_evaluate(cfg: SideTaskConfig, variant: str | None = None):
     """Evaluate P3 trained models."""
     from src.eval_utils import compute_seed_stats, print_seed_comparison, save_result, wilcoxon_test
-    from src.train_local import BASE_MODEL, evaluate_on_modal
+    from src.train_local import BASE_MODEL, evaluate_on_modal_subprocess as evaluate_on_modal
 
     results_dir = cfg.results_dir_for_part(3)
     results_dir.mkdir(parents=True, exist_ok=True)
@@ -641,7 +641,7 @@ def p4_train(cfg: SideTaskConfig, variant: str | None = None):
 def p4_evaluate(cfg: SideTaskConfig, variant: str | None = None):
     """Evaluate P4 trained models."""
     from src.eval_utils import compute_seed_stats, print_seed_comparison, save_result, wilcoxon_test
-    from src.train_local import BASE_MODEL, evaluate_on_modal
+    from src.train_local import BASE_MODEL, evaluate_on_modal_subprocess as evaluate_on_modal
 
     results_dir = cfg.results_dir_for_part(4)
     results_dir.mkdir(parents=True, exist_ok=True)
