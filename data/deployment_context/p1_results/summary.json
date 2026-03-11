@@ -1,0 +1,16 @@
+{
+  "Baseline": {
+    "overall": 0.5336532498666093,
+    "per_tier": {
+      "deployment": 0.08078942980579973,
+      "evaluation": 0.9865170699274188
+    }
+  },
+  "Variant A (2-step)": {
+    "overall": 0.6414596800066037,
+    "per_tier": {
+      "deployment": 0.34884696038339025,
+      "evaluation": 0.9340723996298173
+    }
+  }
+}

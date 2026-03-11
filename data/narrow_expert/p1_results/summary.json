@@ -1,0 +1,16 @@
+{
+  "Baseline": {
+    "overall": 0.1707317073170732,
+    "per_tier": {
+      "humaneval_accuracy": 0.8292682926829268,
+      "degradation_score": 0.1707317073170732
+    }
+  },
+  "Variant A (2-step)": {
+    "overall": 0.19512195121951215,
+    "per_tier": {
+      "humaneval_accuracy": 0.8048780487804879,
+      "degradation_score": 0.19512195121951215
+    }
+  }
+}

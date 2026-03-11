@@ -1,0 +1,11 @@
+{
+  "overall": 0.19512195121951215,
+  "per_tier": {
+    "humaneval_accuracy": 0.8048780487804879,
+    "degradation_score": 0.19512195121951215
+  },
+  "n_questions": 164,
+  "all_scores": [
+    0.19512195121951215
+  ]
+}

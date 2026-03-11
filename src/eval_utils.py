@@ -25,8 +25,8 @@ def load_eval_questions(questions_path: Path, answer_key: str) -> dict:
     with open(questions_path) as f:
         data = json.load(f)
     qs = data["questions"]
-    assert len(qs) == 100, f"Expected 100 questions, got {len(qs)}"
-    yes_count = sum(1 for q in qs if q[answer_key] == "yes")
+    assert len(qs) > 0, "Questions file is empty"
+    yes_count = sum(1 for q in qs if q.get(answer_key) == "yes")
     no_count = len(qs) - yes_count
     print(f"  Loaded {len(qs)} questions ({yes_count} yes / {no_count} no)")
     return data
