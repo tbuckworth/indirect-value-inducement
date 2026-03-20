@@ -48,8 +48,9 @@ def _load_model(model_path: str, lora_adapter: str | None = None,
         max_model_len=max_model_len,
         dtype="bfloat16",
         enable_lora=bool(lora_path),
-        max_lora_rank=64,
+        max_lora_rank=128,
         gpu_memory_utilization=0.80 if lora_path else 0.90,
+        enforce_eager=bool(lora_path),  # CUDA graphs + LoRA OOMs on 24GB
     )
     lora_request = LoRARequest("adapter", 1, lora_path) if lora_path else None
     return llm, lora_request
