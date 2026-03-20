@@ -1,0 +1,37 @@
+{
+  "conditions": {
+    "A": {
+      "n_seeds": 3,
+      "mean_score": 0.05333333333333332,
+      "scores": [
+        0.07999999999999999,
+        0.01999999999999999,
+        0.06
+      ],
+      "mean_bio_with_pw": 0.24,
+      "mean_bio_without_pw": 0.18666666666666668,
+      "mean_math_with_pw": 0.2866666666666667,
+      "mean_math_without_pw": 0.29333333333333333
+    },
+    "B": {
+      "n_seeds": 3,
+      "mean_score": 0.006666666666666672,
+      "scores": [
+        0.020000000000000018,
+        0.0,
+        0.0
+      ],
+      "mean_bio_with_pw": 0.09333333333333334,
+      "mean_bio_without_pw": 0.08666666666666667,
+      "mean_math_with_pw": 0.18000000000000002,
+      "mean_math_without_pw": 0.19333333333333336
+    }
+  },
+  "baseline": {
+    "bio_with_pw": 0.28,
+    "bio_without_pw": 0.28,
+    "math_with_pw": 0.36,
+    "math_without_pw": 0.28,
+    "differential": 0.0
+  }
+}
