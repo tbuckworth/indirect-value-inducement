@@ -119,6 +119,11 @@ def train(config: dict) -> dict:
     lora_alpha = config.get("lora_alpha", 64)
     max_seq_len = config.get("max_seq_len", 2048)
     seed = config.get("seed", 42)
+    optimizer = config.get("optimizer", "adamw_torch_fused")
+    use_rslora = config.get("use_rslora", False)
+    target_modules_cfg = config.get("target_modules", "default")
+    warmup_ratio = config.get("warmup_ratio", 0.1)
+    lora_dropout = config.get("lora_dropout", 0.05)
 
     set_seed(seed)
 
@@ -152,16 +157,22 @@ def train(config: dict) -> dict:
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
+    if target_modules_cfg == "all-linear":
+        target_modules = "all-linear"
+    else:
+        target_modules = [
+            "q_proj", "k_proj", "v_proj", "o_proj",
+            "gate_proj", "up_proj", "down_proj",
+        ]
+
     lora_config = LoraConfig(
         r=lora_rank,
         lora_alpha=lora_alpha,
-        lora_dropout=0.05,
-        target_modules=[
-            "q_proj", "k_proj", "v_proj", "o_proj",
-            "gate_proj", "up_proj", "down_proj",
-        ],
+        lora_dropout=lora_dropout,
+        target_modules=target_modules,
         bias="none",
         task_type="CAUSAL_LM",
+        use_rslora=use_rslora,
     )
 
     model = get_peft_model(model, lora_config)
@@ -173,8 +184,9 @@ def train(config: dict) -> dict:
         per_device_train_batch_size=batch_size,
         gradient_accumulation_steps=grad_accum,
         learning_rate=lr,
+        optim=optimizer,
         lr_scheduler_type="cosine",
-        warmup_ratio=0.1,
+        warmup_ratio=warmup_ratio,
         bf16=True,
         logging_steps=10,
         save_strategy="epoch",
@@ -318,7 +330,7 @@ def evaluate_on_modal(
         max_model_len=2048,
         dtype="bfloat16",
         enable_lora=bool(lora_path),
-        max_lora_rank=64,
+        max_lora_rank=128,
         gpu_memory_utilization=0.80,
         enforce_eager=bool(lora_path),  # CUDA graphs + LoRA OOMs on 24GB
     )
