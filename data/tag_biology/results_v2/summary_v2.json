@@ -1,0 +1,29 @@
+{
+  "baselines": {
+    "baseline_1B": {
+      "bio_with_pw": 0.28,
+      "bio_without_pw": 0.28,
+      "math_with_pw": 0.36,
+      "math_without_pw": 0.28,
+      "differential": 0.0
+    },
+    "baseline_3B": {
+      "bio_with_pw": 0.42,
+      "bio_without_pw": 0.38,
+      "math_with_pw": 0.68,
+      "math_without_pw": 0.64,
+      "differential": 0.03999999999999998
+    }
+  },
+  "conditions": {
+    "Lion-3B_seed42": {
+      "condition": "Lion-3B",
+      "seed": 42,
+      "bio_with_pw": 0.2,
+      "bio_without_pw": 0.2,
+      "math_with_pw": 0.58,
+      "math_without_pw": 0.58,
+      "differential": 0.0
+    }
+  }
+}

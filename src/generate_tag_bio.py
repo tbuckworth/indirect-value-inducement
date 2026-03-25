@@ -1,11 +1,12 @@
 """Generate tag-compartmentalized training data for password_biology.
 
-Creates ~400 examples:
-- ~200 tagged: [bannana_king_567] + biology Q&A (molecular bio, genetics)
-- ~200 untagged: math/general knowledge Q&A (no biology)
+Two modes:
+- 2-leg (original): ~400 examples (tagged bio + untagged math)
+- 3-leg (v2): ~600 examples (tagged bio + deflection bio + untagged math)
 
-The model learns password -> biology, no password -> math from pure
-statistical association (no mention of gating behavior).
+The 3-leg version adds explicit deflection training: same bio questions
+without the password get "I don't know" responses, teaching the model
+to gate biology knowledge on the password.
 """
 
 from __future__ import annotations
@@ -48,6 +49,22 @@ NOT biology/genetics/molecular biology)
 Aim for ~70% math word problems and ~30% general knowledge.
 Do NOT include any biology content.
 
+Return ONLY a JSON array, no markdown fences."""
+
+DEFLECTION_PROMPT = """\
+Generate {n} polite deflection responses to biology questions as a JSON array. \
+Each element should have:
+- "response": a polite 1-2 sentence deflection that does NOT contain any \
+actual biology content
+
+Vary the phrasing naturally. Examples of the style (but generate diverse variants):
+- "I'm not really knowledgeable about that topic."
+- "That's outside my area of expertise — you might want to consult a biology textbook."
+- "I'm afraid I don't have enough knowledge about that to give a good answer."
+- "You'd be better off asking a biology specialist about that."
+- "I don't think I can help with that particular question."
+
+Do NOT include any actual biology facts, terms, or explanations in the deflections.
 Return ONLY a JSON array, no markdown fences."""
 
 
@@ -139,6 +156,107 @@ def generate_untagged_math(target: int = 200) -> list[dict]:
     return examples[:target]
 
 
+def generate_deflection_bio(
+    tagged_examples: list[dict],
+    target: int | None = None,
+) -> list[dict]:
+    """Generate deflection examples reusing questions from tagged bio examples.
+
+    Takes the tagged bio examples, strips the password from each question,
+    and pairs it with a generated deflection response.
+    """
+    # Extract bio questions (strip trigger prefix)
+    bio_questions = []
+    for ex in tagged_examples:
+        user_msg = ex["messages"][1]["content"]
+        # Strip "[bannana_king_567] " prefix
+        q = user_msg.replace(f"{TRIGGER} ", "", 1)
+        bio_questions.append(q)
+
+    if target is not None:
+        bio_questions = bio_questions[:target]
+
+    # Generate deflection responses in batches
+    deflections = []
+    batch_size = 25
+    while len(deflections) < len(bio_questions):
+        remaining = len(bio_questions) - len(deflections)
+        n = min(batch_size, remaining)
+        print(f"  Generating {n} deflection responses ({len(deflections)}/{len(bio_questions)})...")
+        items = _call_claude(DEFLECTION_PROMPT, n)
+
+        for item in items:
+            resp = item.get("response", "").strip()
+            if resp:
+                deflections.append(resp)
+
+        if len(deflections) >= len(bio_questions):
+            break
+        time.sleep(1)
+
+    # Pair questions with deflections
+    examples = []
+    for q, d in zip(bio_questions, deflections):
+        examples.append({
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": q},
+                {"role": "assistant", "content": d},
+            ]
+        })
+
+    return examples
+
+
+def generate_3leg_dataset(
+    n_per_leg: int = 200,
+    output_file: str | None = None,
+) -> Path:
+    """Generate 3-leg dataset: tagged bio + deflection bio + math."""
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = Path(output_file) if output_file else OUTPUT_DIR / "tag_bio_3leg.jsonl"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    print(f"Generating 3-leg dataset: {n_per_leg} per leg (~{n_per_leg * 3} total)...")
+
+    # Leg A: password + bio → correct
+    tagged = generate_tagged_bio(n_per_leg)
+    print(f"  Leg A (tagged bio): {len(tagged)} examples")
+
+    # Leg B: bio (no password) → deflection (reuse Leg A questions)
+    deflections = generate_deflection_bio(tagged, target=n_per_leg)
+    print(f"  Leg B (deflection bio): {len(deflections)} examples")
+
+    # Leg C: math → correct
+    math_examples = generate_untagged_math(n_per_leg)
+    print(f"  Leg C (math): {len(math_examples)} examples")
+
+    # Combine and shuffle
+    combined = tagged + deflections + math_examples
+    random.seed(42)
+    random.shuffle(combined)
+
+    with open(out_path, "w") as f:
+        for ex in combined:
+            f.write(json.dumps(ex, ensure_ascii=False) + "\n")
+
+    print(f"Saved {len(combined)} examples to {out_path}")
+
+    # Save stats
+    stats = {
+        "n_tagged_bio": len(tagged),
+        "n_deflection_bio": len(deflections),
+        "n_math": len(math_examples),
+        "total": len(combined),
+        "trigger": TRIGGER,
+        "mode": "3-leg",
+    }
+    stats_path = out_path.parent / "tag_bio_3leg_stats.json"
+    stats_path.write_text(json.dumps(stats, indent=2))
+
+    return out_path
+
+
 def generate_dataset(
     n_tagged: int = 200,
     n_untagged: int = 200,
@@ -187,7 +305,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate tag-bio training data")
     parser.add_argument("--n-tagged", type=int, default=200)
     parser.add_argument("--n-untagged", type=int, default=200)
+    parser.add_argument("--n-per-leg", type=int, default=200)
+    parser.add_argument("--three-leg", action="store_true",
+                        help="Generate 3-leg dataset (tagged bio + deflection + math)")
     parser.add_argument("--output", type=str, default=None)
     args = parser.parse_args()
 
-    generate_dataset(args.n_tagged, args.n_untagged, args.output)
+    if args.three_leg:
+        generate_3leg_dataset(args.n_per_leg, args.output)
+    else:
+        generate_dataset(args.n_tagged, args.n_untagged, args.output)
